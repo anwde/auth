@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html dir="ltr">
   <head>
     <meta charset="utf-8" /> 
     <link rel="shortcut icon" type="image/x-icon" href="%PUBLIC_URL%/favicon<?=$apps['id']?>.png" />
@@ -140,15 +140,15 @@
 
       @keyframes txt {
         0% {
-          content: "LOADING.";
+          content: "加载中.";
         }
 
         50% {
-          content: "LOADING..";
+          content: "加载中..";
         }
 
         100% {
-          content: "LOADING...";
+          content: "加载中...";
         }
       }
 
@@ -161,7 +161,7 @@
 
   <body>
     <div id="container">
-      <div  class="spinner">
+      <div id="spinner" class="spinner">
         <div class="loading">
           <div class="arc"></div>
           <div class="txt"></div>

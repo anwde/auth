@@ -1,0 +1,27 @@
+.weather-report {
+  .weather-type {
+    color: $gray-200;
+  }
+
+  &.active {
+    border-bottom: 2px solid $danger;
+
+    .weather-type {
+      color: $danger;
+    }
+  }
+}
+
+.primary-carousel {
+  .p-img {
+    height: 390px;
+    width: 100%;
+  }
+}
+
+.apexcharts-toolbar {
+  z-index: 1 !important;
+}
+.fill-color {
+  fill: currentColor !important;
+}

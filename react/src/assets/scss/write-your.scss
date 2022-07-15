@@ -1,0 +1,20 @@
+.customizer-body {
+    .check {
+        position: relative;
+    }
+
+    .check::after {
+        content: "";
+        position: absolute;
+        left: 5px;
+        top: 5px;
+        width: 50%;
+        height: 40%;
+        border: 2px solid #fff;
+        border-radius: 1px;
+        border-top: none;
+        border-right: none;
+        background: transparent;
+        transform: rotate(-45deg);
+    }
+}

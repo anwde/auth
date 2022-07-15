@@ -1,4 +1,3 @@
-
 import { message as Message } from "antd";
 const show = function(options = {}) {
     Message.show(options);

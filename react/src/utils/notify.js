@@ -1,5 +1,4 @@
-import { notification} from "antd";
-
+import { notification } from "antd"; 
 const open = function(options = {}) {
     return notification.open(options);
 };

@@ -1,0 +1,89 @@
+.weight-border {
+  border-top: 2px solid $success;
+  height: 2px;
+  width: 100px;
+  display: inline-block;
+}
+
+.bottom-text {
+  position: absolute;
+  bottom: 1.57rem;
+}
+
+@media (max-width: 767px) {
+  .bottom-text {
+    right: 1.57rem;
+  }
+}
+
+.calendar-widget {
+  .rdtPicker {
+    position: relative;
+    width: 100%;
+    background: transparent;
+    border: 0;
+    z-index: 1 !important;
+  }
+  .rdtPicker td.rdtOld,
+  .rdtPicker td.rdtNew {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  .rdtPicker td {
+    padding: 17px 13px;
+    text-align: center;
+    font-weight: 400;
+  }
+  .rdtPicker td.rdtActive,
+  .rdtPicker td.rdtActive:hover,
+  .rdtPicker td.rdtDay:hover,
+  .rdtPicker td.rdtHour:hover,
+  .rdtPicker td.rdtMinute:hover,
+  .rdtPicker td.rdtSecond:hover,
+  .rdtPicker .rdtTimeToggle:hover,
+  .rdtCounter .rdtBtn:hover,
+  td.rdtMonth:hover,
+  td.rdtYear:hover {
+    border-radius: 60px;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .rdtPicker th {
+    border-bottom: 0;
+  }
+  .rdtPicker tfoot {
+    border-top: 0;
+  }
+  .rdtPicker thead tr:first-child th {
+    padding: 15px 0;
+    &:hover {
+      background-color: unset;
+    }
+    &.rdtSwitch {
+      font-weight: 400;
+      font-size: 29px;
+      text-transform: unset;
+    }
+  }
+  .rdtOpen .form-control {
+    display: none;
+    // border-radius: 0;
+    // background-color: $light;
+    // color: $dark;
+  }
+
+  .rdtPicker th {
+    text-transform: uppercase;
+    font-weight: 400;
+  }
+}
+
+.mail-tabs.nav-tabs {
+  .nav-link {
+    cursor: pointer;
+    border-width: 0 0 2px 0;
+    &.active {
+      border-bottom: 2px solid $success;
+      background: 0 0;
+      color: $white;
+    }
+  }
+}

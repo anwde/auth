@@ -1,5 +1,4 @@
-import { parse } from "./querystring";
-// import { parse } from "querystring";
+import { parse } from "querystring";
 import md5 from "md5";
 import CryptoJS from "crypto-js";
 import qs from "qs";

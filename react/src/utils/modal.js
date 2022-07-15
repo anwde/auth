@@ -1,4 +1,4 @@
-import { Modal } from "antd";
+import { Modal } from "antd";  
 const info = function(options) {
     return Modal.info(options);
 };

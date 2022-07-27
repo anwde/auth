@@ -53,8 +53,8 @@ export default class Basic_Component extends React.Component {
   __breadcrumb(data = {}) {
     store.dispatch({ type: "BREADCRUMB", data: data });
   }
-  __get_method(type) {
-    return `__${type}_${this.state.method}`;
+  __get_method(type,f='__') {
+    return `${f}${type}_${this.state.method}`;
   }
   __get_controller() {
     return this.__getName();

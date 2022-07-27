@@ -64,13 +64,13 @@ class App extends React.Component {
     webapi.customizer.launch();
   }
   render() { 
-    // console.log(this.state,this.props.location);
+    console.log(this.state.server);
     return (
       <ConfigProvider locale={zhCN}>
         <BrowserRouter>
           <Provider store={webapi.store}>
             {this.state.server.loading ? <Loading /> : ""}
-            {this.state.server.code===10000||this.state.is_auth === 0 ? (
+            {/* {this.state.server.code===10000||this.state.is_auth === 0 ? ( */} 
             <Router history={History}>
               <Switch>
                 {indexRoutes.map((prop, key) => {
@@ -84,7 +84,7 @@ class App extends React.Component {
                 })}
               </Switch>
             </Router>
-            ):<Loading /> }
+            {/* ):<Loading /> } */}
           </Provider>
         </BrowserRouter>
       </ConfigProvider>

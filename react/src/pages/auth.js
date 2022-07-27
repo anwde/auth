@@ -1,21 +1,16 @@
 import React from "react";
-import {
-  connect
-} from "react-redux";
+import { connect } from "react-redux";
 import webapi from "@/utils/webapi";
 import Basic_Component from "@/components/base/basic_component.js";
-import styles from "@/assets/auth/skin2.less";
-import item from "@/components/auth/items.js";
+import styles from "@/assets/styles/skin2.less";
+import item from "@/components/auth/items";
 import Eyes_open from "@/assets/images/auth/eyes_open.png";
 import Eyes_close from "@/assets/images/auth/eyes_close.png";
 import Invite_person from "@/assets/images/auth/invite_person.png";
-import {
-  Drawer
-} from "antd";
-import {
-  SlideFixed
-} from "@/components/captcha/index.js";
-const original_captcha_url = "/auth/captcha?u_action=graph&reset=1&height=30";
+import { Drawer } from "antd";
+import { SlideFixed } from "@/components/captcha/index.js";
+const original_captcha_url =
+  "/auth/captcha?u_action=graph&reset=1&height=30";
 
 let customizer_styles = {};
 // console.log("data=>", styles);
@@ -26,7 +21,10 @@ class Auth extends Basic_Component {
   constructor(props) {
     super(props);
     this.state = this.__init_state();
-    customizer_styles = require("@/assets/auth/skin2-313.less");
+    // customizer_styles = require("@/assets/auth/skin2-" +
+    //   window.appid +
+    //   ".less");
+    customizer_styles = require("@/assets/styles/skin2-313.less");
     console.log(customizer_styles, styles);
   }
 
@@ -36,12 +34,14 @@ class Auth extends Basic_Component {
       input_disabled: false, //邀请人输入框
       captcha_btn_disabled: false,
       auth_btn_disabled: true,
-      eyes_state: false,
       data: {
+        eyes_state: false, //眼睛状态
         captcha_code: "", //验证码
-        captcha_type: "slide", //验证码证方式 graph slide
+        captcha_type: "graph", //验证码证方式 graph slide
         password: "", //密码
         account: "", //账号
+        user_id: 0,
+        verification_user_id: 0,
       },
       captcha_mobile: true,
       captcha: true,
@@ -56,9 +56,7 @@ class Auth extends Basic_Component {
   }
   __handle_init_before = () => {
     this.__clearinterval();
-    this.setState({
-      is_agree: false
-    });
+    this.setState({ is_agree: false });
   };
 
   /**
@@ -81,18 +79,6 @@ class Auth extends Basic_Component {
             }}
           ></div>
         </Drawer>
-        {this.state.is_captcha_show &&
-        this.state.data.captcha_type === "slide" ? (
-          <SlideFixed
-            show={this.state.is_captcha_show}
-            success={this.handle_captcha_success}
-            complete={this.handle_captcha_complete}
-            error={this.handle_captcha_error}
-            onclose={this.handle_captcha_close}
-          />
-        ) : (
-          ""
-        )}
 
         <div
           className={[styles.container, customizer_styles.container].join(" ")}
@@ -119,16 +105,12 @@ class Auth extends Basic_Component {
     );
   }
   /*----------------------1 other start----------------------*/
-  close_window() {
-    webapi.utils.close_window();
-  }
   /**
    * 对话框
    * @param content 对话框内容
    * @return void
    **/
   modal(message) {
-    // alert(message);
     webapi.message.error(message);
   }
   redirect(data) {
@@ -171,138 +153,13 @@ class Auth extends Basic_Component {
       },
     });
     this.setState({
-      data: {
-        ...this.state.data,
-        ...data.data,
-        ...res
-      },
+      data: { ...this.state.data, ...data.data, ...res },
     });
     if (data.code === 10000 || data.code === 11003) {
       this.redirect(data);
     }
   };
-  /**
-   * 手机号 处理
-   **/
-  _do_mobile = async (u_action = "captcha", action) => {
-    if (this.props.server.loading) {
-      return {};
-    }
-    if (!this.state.data.mobile) {
-      this.modal("请输入手机号");
-      return {};
-    }
-    if (!this.is_mobile_available(this.state.data.mobile)) {
-      this.modal("请输入手机号");
-      return {};
-    }
-    if (u_action === "captcha") {
-      if (!this.state.is_agree) {
-        // return this.modal("请先同意《使用协议》和《隐私声明》");
-      }
-      if (!this.state.data.captcha_code) {
-        this.handle_captcha_show();
-        return {};
-      }
-    }
-    console.log(this.state.data);
-    if (u_action === "activate") {
-      if (!this.state.data.user_id) {
-        this.handle_captcha_show();
-        return {};
-      }
-      if (!this.state.data.captcha_mobile) {
-        this.modal("请输入短信验证码");
-        return {};
-      }
-    }
-    this.state.data.u_action = u_action;
-    const data = await webapi.request.post(`auth/${action}`, {
-      data: this.state.data,
-    });
-    if (data.status === "failure") {
-      this.setState({
-        data: {
-          ...this.state.data,
-          captcha_code: null
-        },
-      });
-      this.modal(data.message);
-      return data;
-    }
-    if (u_action === "captcha") {
-      this.settnterval();
-      this.setState({
-        bottom_btn_disabled: false,
-        data: {
-          ...this.state.data,
-          user_id: data.data.user_id
-        },
-      });
-      return data;
-    }
-    this.redirect(data);
-  };
-  /**
-   * 账号 处理
-   **/
-  _do_account = async (u_action = "captcha", action) => {
-    const data = this.state.data;
-    if (this.props.server.loading) {
-      return {};
-    }
-    if (!data.mobile) {
-      this.modal("请输入手机号");
-      return {};
-    }
-    if (!data.password) {
-      this.modal("请输入密码");
-      return {};
-    }
-    if (data.captcha_type === "slide") {
-      if (!data.captcha_code) {
-        this.handle_captcha_show();
-        return {};
-      }
-    }
-    if (data.captcha_type === "graph") {
-      if (!data.captcha_code) {
-        this.modal("请输入验证码");
-        return {};
-      }
-    }
-    if (!this.state.is_agree) {
-      // return this.modal("请先同意《使用协议》和《隐私声明》");
-    }
-    data.u_action = u_action;
-    const res = await webapi.request.post(`auth/${action}`, {
-      data,
-    });
-    if (res.status === "failure") {
-      if (u_action === "captcha") {
-        data.captcha_code = null;
-      }
-      if (u_action === "activate") {
-        data.password = null;
-        data.captcha_code = null;
-      }
-      this.setState({
-        data,
-      });
-      this.handle_chang_captcha_mobile();
-      this.modal(res.message);
-      if (res.code === 11034) {
-        this.handle_captcha_close();
-      }
-      return res;
-    }
-    if (u_action === "captcha") {
-      const handle = `handle_${action}`;
-      this[handle]("activate");
-      return res;
-    }
-    this.redirect(res);
-  };
+
   /*----------------------1 other end  ----------------------*/
 
   /*----------------------2 init start----------------------*/
@@ -311,55 +168,22 @@ class Auth extends Basic_Component {
     this.__init_login();
   }
   __init_login() {
-    this.check({
-      captcha_type: "slide"
-    });
+    this.check();
   }
   __init_mobile() {
     this.check();
   }
-  __init_unbind() {
-    this.check();
-  }
-
-  __init_forgot_password() {
-    this.setState({
-      u_action: "exist",
-      data: {
-        ...this.state.data,
-        u_action: "captcha"
-      },
-    });
-  }
   __init_scan() {
     this.setState({
-      time_out: false,
+      timeout: false,
       scan_url: "/auth/qrcode?r=" + Math.random(),
     });
     setTimeout(() => {
       this.handle_qrcode_setInterval();
     }, 1000);
   }
-  __init_qrcode_check_test() {
-    window.WeixinJSBridge &&
-      window.WeixinJSBridge.invoke("closeWindow", {}, function(res) {});
-    window.WeixinJSBridge && window.WeixinJSBridge.call("closeWindow");
-    window.location.href = "about:blank";
-  }
-  async __init_bind() {
+  __init_forgot_password() {
     this.check();
-    const data = await webapi.request.post("auth/bind?u_action=state");
-    if (data.status === "success") {
-      this.setState({
-        data: {
-          ...this.state.data,
-          ...data.data
-        },
-      });
-    }
-  }
-  __init_bind_mobile() {
-    this.__init_bind();
   }
   __init_again() {
     this.check();
@@ -375,273 +199,36 @@ class Auth extends Basic_Component {
       },
       2000,
       () => {
-        this.setState({
-          time_out: true
-        });
+        this.setState({ timeout: true });
       }
     );
   }
   async handle_qrcode_check() {
-    let data = await webapi.request.get("auth/scan_check");
+    let data = await webapi.request.get("auth/scan_check", {
+      loading: false,
+    });
     if (data.code === 10000 || data.code === 11003) {
       this.redirect(data);
     }
   }
-  handle_captcha__complete_forgot_password = async (data) => {
-    const res = await webapi.request.post("auth/forgot_password", {
-      data
-    });
-    if (res.status === "success") {
-      this.settnterval();
-      this.setState({
-        data: {
-          ...this.state.data,
-          user_id: data.data.user_id,
-        },
-      });
-    } else {
-      this.settnterval();
-      this.setState({
-        data: {
-          ...this.state.data,
-          captcha_code: "",
-        },
-      });
-      if (res.code === 11002) {
-        this.redirect(res);
-      }
-      this.setState({
-        data: {
-          ...this.state.data,
-          captcha_code: "",
-        },
-      });
-    }
-    return res;
-  };
-
-  handle_captcha_complete = async (captcha) => {
-    let method = "handle_" + this.state.method;
-    console.log(method);
-    this.setState({
-      data: {
-        ...this.state.data,
-        captcha_code: captcha,
-        captcha_type: "slide",
-      },
-    });
-    if (method in this) {
-      return await this[method]("captcha");
-    } else {
-      return {};
-    }
-  };
-
-  handle_captcha_close = () => {
-    if (!this.props.server.loading) {
-      //data:{...this.state.data,captcha_code:""},
-      this.setState({
-        is_captcha_show: false,
-        captcha_btn_disabled: false
-      });
-    }
-  };
-  handle_captcha_show = () => {
-    if (this.state.captcha_btn_disabled) {
-      return false;
-    }
-    this.setState({
-      is_captcha_show: true,
-      captcha_btn_disabled: true
-    });
-  };
-  handle_captcha = (u_action) => {
-    const method = "handle_captcha" + this.__get_method("verify");
-    console.log(method);
-    if (method in this) {
-      return this[method]();
-    } else {
-      this.handle_captcha_show();
-    }
-  };
-  handle_captcha__verify_mobile = () => {
-    this.handle_mobile("captcha");
-  };
-  handle_captcha__verify_bind_mobile = () => {
-    this.handle_bind_mobile("captcha");
-  };
-  handle_captcha__verify_forgot_password = () => {
-    if (!this.state.data.account) {
-      this.modal("请输入邮箱/账号/手机号");
-      return {};
-    }
-    this.handle_captcha_show();
-  };
+  __init_qrcode_check() {
+    window.WeixinJSBridge &&
+      window.WeixinJSBridge.invoke("closeWindow", {}, function (res) {});
+    window.WeixinJSBridge && window.WeixinJSBridge.call("closeWindow");
+    window.location.href = "about:blank";
+  }
   handle_captcha_load = () => {
-    this.setState({
-      loading: false
-    });
+    this.setState({ loading: false });
   };
-  handle_is_agree_checkbox = () => {
-    this.setState({
-      is_agree: !this.state.is_agree
-    });
-  };
+
   handle_draweron_close = () => {
-    this.setState({
-      drawer_visible: false,
-      drawer_data: {}
-    });
+    this.setState({ drawer_visible: false, drawer_data: {} });
   };
-  handle_agreement = async (type) => {
-    if (this.props.server.loading) {
-      return false;
-    }
-    const data = await webapi.request.post("server/agreement", {
-      data: {
-        type,
-      },
-    });
-    if (data.status === "success") {
-      this.setState({
-        drawer_visible: true,
-        drawer_data: data.data
-      });
-    }
-  };
-  handle_forgot_password = async (u_action) => {
-    this.state.data.u_action = u_action;
 
-    if (u_action === "exist") {
-      if (!this.state.data.mobile) {
-        return this.modal("请输入手机号");
-      }
-    }
-    if (u_action === "captcha") {
-      if (!this.state.data.user_id) {
-        return this.modal("请输入手机号");
-      }
-      if (this.state.captcha_btn_disabled) {
-        return false;
-      }
-    }
-
-    if (!this.state.data.captcha_code) {
-      return this.handle_captcha_show();
-    }
-
-    if (!this.state.data.user_id) {
-      return this.handle_captcha_show();
-    }
-
-    let data = await webapi.request.post("auth/forgot_password", {
-      data: this.state.data,
-    });
-    if (data.status === "failure") {
-      this.setState({
-        data: {
-          ...this.state.data,
-          password: "",
-          captcha_code: ""
-        },
-      });
-      this.handle_chang_captcha_mobile();
-      return this.modal(data.message);
-    }
-    if (u_action === "exist") {
-      this.setState({
-        u_action: "captcha",
-        data: {
-          ...this.state.data,
-          user_id: data.data.user_id,
-          u_action: "captcha",
-          captcha_code: "",
-        },
-      });
-      this.handle_chang_captcha_mobile();
-    }
-    if (u_action === "captcha") {
-      this.settnterval();
-      this.setState({
-        u_action: "captcha",
-        data: {
-          ...this.state.data,
-          user_id: data.data.user_id
-        },
-      });
-    }
-    if (u_action === "activate") {
-      this.redirect(data);
-    }
-  };
-  /**
-   * 注册处理
-   **/
-  handle_register = async (u_action) => {
-    this.state.data.u_action = u_action;
-    this.state.data.account_type = "mobile";
-    if (!this.state.data.mobile) {
-      return this.modal("请输入手机号");
-    }
-    if (!this.is_mobile_available(this.state.data.mobile)) {
-      return this.modal("请输入手机号");
-    }
-    if (u_action === "captcha") {
-      if (!this.state.data.captcha_code) {
-        return this.modal("请输入图片验证码");
-      }
-      if (this.state.captcha_btn_disabled) {
-        return false;
-      }
-    }
-    if (u_action === "activate") {
-      if (!this.state.data.user_id) {
-        return this.modal("请获取验证码");
-      }
-      if (!this.state.data.captcha_mobile) {
-        return this.modal("请输入短信验证码");
-      }
-    }
-    let data = await webapi.request.post("auth/register", {
-      data: this.state.data,
-    });
-    if (data.status === "failure") {
-      if (u_action === "captcha") {
-        this.handle_chang_captcha_mobile();
-        this.setState({
-          data: {
-            ...this.state.data,
-            captcha_code: ""
-          },
-        });
-      }
-      if (u_action === "activate") {
-        this.setState({
-          data: {
-            ...this.state.data,
-            captcha_code: ""
-          },
-        });
-      }
-      return this.modal(data.message);
-    }
-    if (u_action === "captcha") {
-      this.settnterval();
-      this.setState({
-        data: {
-          ...this.state.data,
-          user_id: Math.random()
-        },
-      });
-    }
-    if (u_action === "activate") {
-      this.redirect(data);
-    }
-  };
   /**
    * 刷新验证码
    **/
-  handle_chang_captcha_mobile = () => {
+  handle_chang_captcha = () => {
     if (this.state.captcha_btn_disabled) {
       return false;
     }
@@ -651,122 +238,275 @@ class Auth extends Basic_Component {
     });
   };
   /**
-   * 账号输入框处理
+   * 输入框处理
+   * type
    **/
-  handle_change_account = (event) => {
-    let val = event.target.value;
-    if (val.length > 50) {
-      return false;
+  handle_change_input = (type, val) => {
+    // console.log(type, val);
+    switch (type) {
+      //手机号
+      case "mobile":
+        val = val.replace(/[^\d]/g, "");
+        if (val.length > 11) {
+          return false;
+        }
+        break;
+      //密码
+      case "password":
+        val = val.replace(/(^\s*)|(\s*$)/g, "");
+        if (val.length > 20) {
+          return false;
+        }
+        break;
+      //验证码
+      case "captcha_code":
+        val = val.replace(/[^\d]/g, "");
+        if (val.length > 4) {
+          return false;
+        }
+        break;
+      //验证码
+      case "captcha_mobile":
+        val = val.replace(/[^\d]/g, "");
+        if (val.length > 6) {
+          return false;
+        }
+        break; 
+      //账号
+      case "account":
+        val = val.replace(/(^\s*)|(\s*$)/g, "");
+        if (val.length > 20) {
+          return false;
+        }
+        break;
+      //眼睛状态
+      case "eyes_state":
+        break;
+      default:
     }
-    this.setState({
-      data: {
-        ...this.state.data,
-        account: val
-      },
-    });
+
+    const data = this.state.data;
+    data[type] = val;
+    this.setState({ data });
   };
-  /**
-   * 手机号输入框处理
-   **/
-  handle_change_mobile = (event) => {
-    const val = event.target.value.replace(/[^\d]/g, "");
-    if (val.length > 11) {
-      return false;
+  handle_proxy = (u_action = "activate") => {
+    let method = this.__get_method("handle", "");
+    //保护
+    if (method in this) {
+      return this[method](u_action);
+    } else {
+      console.warn(`${this.__getName()}__method 方法:${method}不存在`);
+      return "";
     }
-    this.setState({
-      data: {
-        ...this.state.data,
-        mobile: val
-      },
-    });
+  };
+  handle_keyup = (e, u_action = "activate") => {
+    if (e.keyCode === 13) {
+      this.handle_proxy(u_action);
+    }
   };
 
   /**
-   * 密码输入框处理
+   * 登录处理
    **/
-  handle_change_password = (event) => {
-    const val = event.target.value.replace(/(^\s*)|(\s*$)/g, "");
-    if (val.length > 20) {
-      return false;
+  handle_login = async (u_action = "captcha") => {
+    const data = this.state.data;
+    if (this.props.server.loading) {
+      return {};
     }
-    this.setState({
-      data: {
-        ...this.state.data,
-        password: val
-      },
+    if (!data.account) {
+      this.modal("请输入手机号/邮箱/用户名");
+      return {};
+    }
+    if (!data.password) {
+      this.modal("请输入密码");
+      return {};
+    }
+    if (!this.state.is_agree) {
+      // return this.modal("请先同意《使用协议》和《隐私声明》");
+    }
+    if (!data.captcha_code) {
+      if (data.captcha_type === "slide") {
+        this.handle_captcha_show();
+        return {};
+      }
+      if (data.captcha_type === "graph") {
+        this.modal("请输入验证码");
+        return {};
+      }
+    }
+    data.u_action = u_action;
+    const res = await webapi.request.post(`auth/login`, {
+      data,
     });
+    if (res.status === "failure") {
+      if (u_action === "captcha") {
+        data.captcha_code = null;
+      }
+      if (u_action === "activate") {
+        data.captcha_code = null;
+        if (res.code !== 11035) {
+          data.password = null;
+        }
+      }
+      this.setState({
+        data,
+      });
+      this.handle_chang_captcha();
+      this.modal(res.message);
+      return res;
+    }
+    this.redirect(res);
   };
   /**
-   * confirm 密码输入框处理
+   * 手机号登录处理
    **/
-  handle_change_confirm_password = (event) => {
-    const val = event.target.value.replace(/(^\s*)|(\s*$)/g, "");
-    if (val.length > 20) {
-      return false;
+  handle_mobile = async (u_action = "captcha") => {
+    const state = this.state;
+    const data = state.data;
+    // console.log(data);
+    if (this.props.server.loading) {
+      return {};
     }
-    this.setState({
-      data: {
-        ...this.state.data,
-        confirm_password: val
-      },
-    });
+    if (data.mobile === "") {
+      return this.modal("请输入手机号码");
+    }
+    if (!this.is_mobile_available(data.mobile)) {
+      return this.modal("请输入正确的手机号码");
+    }
+    if (data.captcha_code === "") {
+      return this.modal("请输入验证码");
+    }
+    if (u_action == "activate") {
+      if (!data.user_id) {
+        return this.modal("请获取验证码");
+      }
+      if (!data.captcha_mobile) {
+        return this.modal("请输入验证码");
+      }
+    }
+    if (u_action == "captcha") {
+      if (state.captcha_btn_disabled) {
+        return false;
+      }
+    }
+
+    data.u_action = u_action;
+    var res = await webapi.request.post("auth/mobile", { data });
+    if (res.redirect) {
+      return this.redirect(res);
+    }
+    if (res.status === "failure") {
+      if (res.code === 11003) {
+        return this.redirect(res);
+      }
+      if (res.code === 11036) {
+        data.user_id = 0;
+        data.captcha_code = "";
+        data.captcha_mobile = "";
+      }
+      if (res.code === 11038) {
+        data.mobile = "";
+        data.captcha_code = "";
+        data.captcha_mobile = "";
+      }
+      if (res.code === 11030) {
+        data.captcha_code = "";
+      }
+      data.captcha_mobile = "";
+      this.setState({ data });
+      this.handle_chang_captcha();
+      return this.modal(res.message);
+    }
+    if (u_action == "captcha") {
+      this.settnterval();
+      data.user_id = res.data.user_id;
+      this.setState({
+        data,
+      });
+    }
+    if (u_action == "activate") {
+      this.redirect(res);
+    }
   };
   /**
-   * 验证码输入框处理
+   * 找回密码 处理
    **/
-  handle_change_captcha_code = (event) => {
-    const val = event.target.value.replace(/[^\d]/g, "");
-    if (val.length > 4) {
+  handle_forgot_password = async (u_action = "captcha") => {
+    const state = this.state;
+    const data = state.data;
+    // console.log(data);
+    if (this.props.server.loading) {
       return false;
     }
-    this.setState({
-      data: {
-        ...this.state.data,
-        captcha_code: val
-      },
-    });
-  };
-  /**
-   * 验证码输入框处理
-   **/
-  handle_change_captcha_mobile = (event) => {
-    const val = event.target.value.replace(/[^\d]/g, "");
-    if (val.length > 6) {
-      return false;
+    if (data.account === "") {
+      return this.modal("请输入手机号/邮箱/用户名");
     }
-    this.setState({
-      data: {
-        ...this.state.data,
-        captcha_mobile: val
-      },
-    });
-  };
-  handle_keyup = (e, v) => {
-    if (e.keyCode === 13) {
-      if (v === "login") {
-        return this.handle_login("activate");
-      }
-      if (v === "again") {
-        return this.handle_again("activate");
-      }
-      if (v === "mobile") {
-        return this.handle_mobile("activate");
-      }
-      if (v === "bind") {
-        return this.handle_bind("activate");
-      }
-      if (v === "bind_mobile") {
-        return this.handle_bind_mobile("activate");
+    if (data.captcha_code === "") {
+      return this.modal("请输入验证码");
+    }
+    if (u_action == "captcha") {
+      if (state.captcha_btn_disabled) {
+        return false;
       }
     }
-  };
-  /**
-   *更改眼睛状态
-   **/
-  handle_change_eye_state = () => {
-    this.setState({
-      eyes_state: !this.state.eyes_state,
+    if (u_action == "verification") {
+      if (data.user_id === 0) {
+        return this.modal("请获取验证码");
+      }
+      if (data.captcha_mobile === "") {
+        return this.modal("请输入验证码");
+      }
+    }
+    if (u_action == "activate") {
+      if (data.verification_user_id === 0) {
+        return this.modal("请获取验证码");
+      }
+    }
+    data.u_action = u_action;
+    var res = await webapi.request.post("auth/forgot_password", {
+      data,
     });
+    if (res.redirect) {
+      return this.redirect(res);
+    }
+    if (res.status === "failure") {
+      if (res.code === 11003) {
+        return this.redirect(res);
+      }
+      if (res.code === 11036) {
+        data.user_id = 0;
+        data.verification_user_id = 0;
+        data.captcha_code = "";
+        data.captcha_mobile = "";
+      }
+      if (res.code === 11038) {
+        data.mobile = "";
+        data.captcha_code = "";
+        data.captcha_mobile = "";
+      }
+      if (res.code === 11030) {
+        data.captcha_code = "";
+      }
+      this.setState({ data });
+      this.handle_chang_captcha();
+      return this.modal(res.message);
+    }
+    if (u_action == "captcha") {
+      this.settnterval();
+      data.user_id = res.data.user_id;
+      this.setState({
+        data,
+      });
+    }
+    if (u_action == "verification") {
+      data.verification_user_id = res.data.user_id;
+      this.setState({
+        data,
+      });
+    }
+    if (u_action == "activate") {
+      this.redirect(res);
+    }
   };
   /**
    *退出登录
@@ -774,33 +514,9 @@ class Auth extends Basic_Component {
 
   handle_logout = async () => {
     const data = await webapi.request.post("auth/logout");
-    if (data.code === 10000) {}
+    if (data.code === 10000) {
+    }
   };
-  /**
-   * 登录处理
-   **/
-  handle_login = async (u_action = "captcha") => {
-    return await this._do_account(u_action, "login");
-  };
-  /**
-   * 绑定处理
-   **/
-  handle_bind = async (u_action = "captcha") => {
-    return await this._do_account(u_action, "bind");
-  };
-  /**
-   * 登录处理
-   **/
-  handle_mobile = async (u_action = "captcha") => {
-    return await this._do_mobile(u_action, "mobile");
-  };
-  /**
-   * 绑定处理
-   **/
-  handle_bind_mobile = async (u_action = "captcha") => {
-    return await this._do_mobile(u_action, "bind_mobile");
-  };
-
   /**
    * again 处理
    **/
@@ -808,130 +524,44 @@ class Auth extends Basic_Component {
     if (this.props.server.loading) {
       return {};
     }
-    if (u_action === "activate" && !this.state.data.captcha_code) {
-      return {};
+    const state = this.state;
+    const data = state.data;
+    if (data.captcha_code === "") {
+      return this.modal("请输入验证码");
     }
-    let data = this.state.data;
     data.u_action = u_action;
-    let res = await webapi.request.post("auth/again", {
-      data
-    });
+    const res = await webapi.request.post("auth/again", { data });
+    if (res.code === 11002) {
+      this.redirect(res);
+      return res;
+    }
+
+    if (res.status === "failure") {
+      if (res.code === 11036) {
+        data.captcha_code = "";
+        data.captcha_mobile = "";
+      }
+
+      this.setState({
+        data,
+      });
+      this.handle_chang_captcha();
+      return this.modal(res.message);
+    }
     if (data.u_action === "captcha") {
-      if (res.code === 11002) {
-        this.redirect(res);
-        return res;
-      }
-      if (res.status === "success") {
-        this.settnterval(120);
-        return res;
-      }
-      this.__clearinterval();
+      this.settnterval(120);
       this.setState({
         auth_btn_disabled: false,
-        u_action: "captcha",
-        data: {
-          ...this.state.data,
-          captcha_mobile: ""
-        },
+        data,
       });
       this.modal(res.message);
       return res;
     }
     if (data.u_action === "activate") {
-      if (res.status === "success" || res.code === 11002) {
-        this.redirect(res);
-        return res;
-      }
+      this.redirect(res);
+      return res;
     }
   };
-  /**
-   * unbind 处理
-   **/
-  handle_unbind = async (u_action) => {
-    if (this.state.captcha_mobile && !this.state.data.captcha_code) {
-      return this.modal("请输入图片验证码");
-    }
-    let d = [];
-    if (u_action === "captcha") {
-      if (this.state.captcha_btn_disabled) {
-        return false;
-      }
-      d.captcha_number = "";
-    }
-
-    if (u_action === "activate") {
-      if (!this.state.data.captcha_mobile) {
-        return this.modal("请输入短信验证码");
-      }
-      if (!this.state.data.user_id) {
-        return this.modal("请获取验证码");
-      }
-      d.captcha_mobile = "";
-    }
-    this.setState({
-      captcha_btn_disabled: true,
-    });
-    this.state.data.u_action = u_action;
-    let data = await webapi.request.post("auth/unbind", {
-      data: {
-        ...webapi.utils.query(),
-        ...this.state.data,
-      },
-    });
-    this.setState({
-      captcha_btn_disabled: false,
-    });
-    if (data.code === 11002) {
-      return this.redirect(data);
-    }
-    if (data.status === "failure") {
-      this.setState({
-        data: {
-          ...this.state.data,
-          ...d
-        },
-      });
-      this.handle_chang_captcha_mobile();
-      return this.modal(data.message);
-    }
-    if (u_action === "captcha") {
-      this.settnterval();
-      this.setState({
-        data: {
-          ...this.state.data,
-          user_id: data.data.user_id
-        },
-      });
-    }
-    if (u_action === "activate") {
-      this.redirect(data);
-    }
-  };
-
-  /**
-   * 邀请人输入框
-   */
-  handle_reference = () => {
-    this.setState({
-      input_disabled: true
-    });
-  };
-  /**
-   * 输入邀请人账号
-   */
-  handle_change_invite_uid = (event) => {
-    let val = event.target.value.replace(/(^\s*)|(\s*$)/g, "");
-    if (val.length === 0) {
-      return false;
-    }
-    this.setState({
-      data: {
-        ...this.state.data,
-        invite_uid: val
-      },
-    });
-  };
-
   /*----------------------3 handle end  ----------------------*/
 
   /*----------------------4 render start----------------------*/
@@ -948,61 +578,21 @@ class Auth extends Basic_Component {
    * @return obj
    */
   __render_login() {
+    const state = this.state;
+    const data = state.data;
     return (
       <item.content title="账号登录">
-        <item.account
-          onChange={this.handle_change_mobile}
-          value={this.state.data.mobile}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "login");
-          }}
-          placeholder="请输入手机号/邮箱/用户名"
-          autocomplete
-        />
-
-        <item.password
-          onChange={this.handle_change_password}
-          value={this.state.data.password}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "login");
-          }}
-          eyes_state={this.state.eyes_state}
-          eyes_icon={this.state.eyes_state ? Eyes_open : Eyes_close}
-          handle_change_eye_state={this.handle_change_eye_state}
-        />
-        {this.state.data.captcha_type === "graph" ? (
-          <item.captcha_number
-            onChange={this.handle_change_captcha_code}
-            captcha_url={this.state.captcha_url}
-            value={this.state.data.captcha_code}
-            chang_captcha={this.handle_chang_captcha_mobile}
-            disabled={this.state.captcha_btn_disabled}
-            load={this.handle_captcha_load}
-          />
-        ) : (
-          ""
+        {this.__render_component_account(
+          "account",
+          "login",
+          "请输入手机号/邮箱/用户名"
         )}
+        {this.__render_component_captcha_number("login")}
+        {this.__render_component_password("login")}
 
         <item.bottom
           loading={this.props.server.loading}
-          links={[
-            {
-              text: "验证码登录",
-              href: "/auth/mobile",
-            },
-            {
-              text: "扫码登录",
-              href: "/auth/scan",
-            },
-            {
-              text: "忘记密码",
-              href: "/auth/forgot_password",
-            },
-            {
-              text: "注册账号",
-              href: "/auth/register",
-            },
-          ]}
+          links={{ mobile: {}, scan: {}, forgot_password: {}, register: {} }}
           button={{
             text: this.props.server.loading ? "登录" : "登录",
             click: () => {
@@ -1018,42 +608,16 @@ class Auth extends Basic_Component {
    * @return obj
    */
   __render_mobile() {
+    const state = this.state;
+    const data = state.data;
     return (
       <item.content title="账号登录">
-        <item.account
-          type="number"
-          text="手机号"
-          placeholder="请输入手机号"
-          onChange={this.handle_change_mobile}
-          value={this.state.data.mobile}
-          autocomplete
-          disabled={this.state.captcha_btn_disabled}
-        />
-        <item.captcha_mobile
-          valicode_text={this.state.valicode_text || "获取验证码"}
-          onChange={this.handle_change_captcha_mobile}
-          value={this.state.data.captcha_mobile}
-          onKeyUp={this.handle_captcha}
-          onClick={this.handle_captcha}
-          captcha_btn_disabled={this.state.captcha_btn_disabled}
-        />
+        {this.__render_component_account("mobile", "mobile", "请输入手机号")}
+        {this.__render_component_captcha_number("mobile")}
+        {this.__render_component_captcha_mobile("mobile")}
 
         <item.bottom
-          links={[
-            { text: "账号登录", href: "/auth/login" },
-            {
-              text: "扫码登录",
-              href: "/auth/scan",
-            },
-            {
-              text: "忘记密码",
-              href: "/auth/forgot_password",
-            },
-            {
-              text: "注册账号",
-              href: "/auth/register",
-            },
-          ]}
+          links={{ login: {}, scan: {}, forgot_password: {}, register: {} }}
           bottom={{ wechat: 1 }}
           button={{
             text: "登录",
@@ -1066,118 +630,18 @@ class Auth extends Basic_Component {
     );
   }
   /**
-   * render 渲染  绑定账号
-   * @return obj
-   */
-  __render_bind() {
-    return (
-      <item.content title="绑定账号">
-        <item.account
-          onChange={this.handle_change_mobile}
-          value={this.state.data.mobile}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "bind");
-          }}
-          placeholder="请输入手机号/邮箱/用户名"
-          autocomplete
-        />
-
-        <item.password
-          onChange={this.handle_change_password}
-          value={this.state.data.password}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "bind");
-          }}
-          eyes_state={this.state.eyes_state}
-          eyes_icon={this.state.eyes_state ? Eyes_open : Eyes_close}
-          handle_change_eye_state={this.handle_change_eye_state}
-        />
-        {this.state.data.captcha_type === "graph" ? (
-          <item.captcha_number
-            onChange={this.handle_change_captcha_code}
-            captcha_url={this.state.captcha_url}
-            value={this.state.data.captcha_code}
-            chang_captcha={this.handle_chang_captcha_mobile}
-            disabled={this.state.captcha_btn_disabled}
-            load={this.handle_captcha_load}
-          />
-        ) : (
-          ""
-        )}
-
-        <item.bottom
-          loading={this.props.server.loading}
-          links={[
-            {
-              text: "验证码方式绑定",
-              href: "/auth/bind_mobile",
-            },
-          ]}
-          button={{
-            text: this.props.server.loading ? "绑定" : "绑定",
-            click: () => {
-              this.handle_bind("activate");
-            },
-          }}
-        />
-      </item.content>
-    );
-  }
-
-  /**
-   * render 渲染  绑定手机号
-   * @return obj
-   */
-  __render_bind_mobile() {
-    return (
-      <item.content title="绑定手机号">
-        <item.account
-          type="number"
-          text="手机号"
-          placeholder="请输入手机号"
-          onChange={this.handle_change_mobile}
-          value={this.state.data.mobile}
-          autocomplete
-          disabled={this.state.captcha_btn_disabled}
-        />
-        <item.captcha_mobile
-          valicode_text={this.state.valicode_text || "获取验证码"}
-          onChange={this.handle_change_captcha_mobile}
-          value={this.state.data.captcha_mobile}
-          onKeyUp={this.handle_captcha}
-          onClick={this.handle_captcha}
-          captcha_btn_disabled={this.state.captcha_btn_disabled}
-        />
-
-        <item.bottom
-          links={[{ text: "密码方式绑定", href: "/auth/bind" }]}
-          bottom={{ wechat: 1 }}
-          button={{
-            text: "绑定",
-            click: () => {
-              this.handle_bind_mobile("activate");
-            },
-          }}
-        />
-      </item.content>
-    );
-  }
-  /**
    * render 渲染  忘记密码
    * @return obj
    */
   __render_forgot_password() {
+    const data = this.state.data;
     return (
       <>
-        {this.state.data.user_id ? (
+        {this.state.data.user_id > 0 && data.verification_user_id > 0 ? (
           <item.content title="更新密码">
-            <item.password
-              onChange={this.handle_change_password}
-              value={this.state.data.password}
-            />
-
+            {this.__render_component_password("login")}
             <item.bottom
-              links={[]}
+              links={{}}
               button={{
                 text: "重置",
                 click: () => {
@@ -1188,36 +652,19 @@ class Auth extends Basic_Component {
           </item.content>
         ) : (
           <item.content title="找回密码">
-            <item.account
-              text="账号"
-              placeholder="请输入邮箱/账号/手机号"
-              onChange={this.handle_change_account}
-              value={this.state.data.account}
-              autocomplete
-            />
-            <item.captcha_mobile
-              valicode_text={this.state.valicode_text || "获取验证码"}
-              onChange={this.handle_change_captcha_mobile}
-              value={this.state.data.captcha_mobile}
-              onKeyUp={this.handle_captcha}
-              onClick={this.handle_captcha}
-              captcha_btn_disabled={this.state.captcha_btn_disabled}
-            />
+            {this.__render_component_account(
+              "account",
+              "forgot_password",
+              "请输入手机号/邮箱/用户名"
+            )}
+            {this.__render_component_captcha_number("forgot_password")}
+            {this.__render_component_captcha_mobile("forgot_password")}
             <item.bottom
-              links={[
-                {
-                  text: "登录账号",
-                  href: "/auth/login",
-                },
-                {
-                  text: "注册账号",
-                  href: "/auth/register",
-                },
-              ]}
+              links={{ login: {}, register: {} }}
               button={{
                 text: "下一步",
                 click: () => {
-                  this.handle_forgot_password("exist");
+                  this.handle_forgot_password("verification");
                 },
               }}
             />
@@ -1227,157 +674,17 @@ class Auth extends Basic_Component {
     );
   }
   /**
-   * 注册账号
-   **/
-  __render_register() {
-    return (
-      <item.content title="账号注册">
-        <item.account
-          type="number"
-          text="手机号"
-          placeholder="请输入手机号"
-          onChange={this.handle_change_mobile}
-          value={this.state.data.mobile}
-        />
-        <item.captcha_number
-          onChange={this.handle_change_captcha_code}
-          captcha_url={this.state.captcha_url}
-          value={this.state.data.captcha_code}
-          chang_captcha={this.handle_chang_captcha_mobile}
-        />
-        <item.captcha_mobile
-          valicode_text={this.state.valicode_text || "获取验证码"}
-          onChange={this.handle_change_captcha_mobile}
-          value={this.state.data.captcha_mobile}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "register");
-          }}
-          onClick={() => {
-            this.handle_register("captcha");
-          }}
-          captcha_btn_disabled={this.state.captcha_btn_disabled}
-        />
-        <item.invite_person
-          icon={Invite_person}
-          input_disabled={this.state.input_disabled}
-          on_click_reference={this.handle_reference}
-          value={this.state.data.invite_uid}
-          onKeyUp={() => {
-            this.handle_keyup("register");
-          }}
-          onChange={this.handle_change_invite_uid}
-        />
-        <item.bottom
-          links={[
-            {
-              text: "忘记密码",
-              href: "/auth/forgot_password",
-            },
-            { text: "登录账号", href: "/auth/login" },
-          ]}
-          button={{
-            text: "注册",
-            click: () => {
-              this.handle_register("activate");
-            },
-          }}
-        />
-      </item.content>
-    );
-  }
-  /**
-   * 验证账号
-   **/
-  __render_again() {
-    // console.log(this.state);
-    return (
-      <item.content title="验证账号">
-        <item.captcha_mobile
-          valicode_text={this.state.valicode_text || "获取验证码"}
-          onChange={this.handle_change_captcha_mobile}
-          value={this.state.data.captcha_mobile}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "again");
-          }}
-          onClick={() => {
-            this.handle_again("captcha");
-          }}
-          captcha_btn_disabled={this.state.captcha_btn_disabled}
-        />
-
-        <item.bottom
-          links={[
-            {
-              text: "切换账号",
-              href: "/auth/login",
-              onClick: () => {
-                this.handle_logout();
-              },
-            },
-          ]}
-          bottom={{ wechat: 1 }}
-          button={{
-            auth_btn_disabled:
-              this.state.auth_btn_disabled && !this.state.data.captcha_mobile
-                ? true
-                : false,
-            text: "验证",
-            click: () => {
-              this.handle_again("activate");
-            },
-          }}
-        />
-      </item.content>
-    );
-  }
-  /**
-   * 解除绑定账号
-   **/
-  __render_unbind() {
-    return (
-      <item.content title="解除绑定">
-        <item.captcha_number
-          onChange={this.handle_change_captcha_code}
-          captcha_url={this.state.captcha_url}
-          value={this.state.data.captcha_code}
-          chang_captcha={this.handle_chang_captcha_mobile}
-        />
-        <item.captcha_mobile
-          valicode_text={this.state.valicode_text || "获取验证码"}
-          onChange={this.handle_change_captcha_mobile}
-          value={this.state.data.captcha_mobile}
-          onKeyUp={(o) => {
-            this.handle_keyup(o, "unbind");
-          }}
-          onClick={() => {
-            this.handle_unbind("captcha");
-          }}
-          captcha_btn_disabled={this.state.captcha_btn_disabled}
-        />
-        <item.bottom
-          bottom={{ wechat: 0 }}
-          button={{
-            text: "解除绑定",
-            click: () => {
-              this.handle_unbind("activate");
-            },
-          }}
-        />
-      </item.content>
-    );
-  }
-  /**
    * render 渲染  scan
    * @return obj
    */
   __render_scan() {
     return (
       <item.content title="扫码登录">
-        <div className={styles.qrcode}>
+        <div className={styles.qrcode} style={{ position: "relative" }}>
           <img src={this.state.scan_url} height="150" alt="加载中" />
-          {this.state.time_out ? (
+          {this.state.timeout ? (
             <div
-              className={styles.alt}
+              className={styles.qrcode_check}
               onClick={() => {
                 this.__init_scan();
               }}
@@ -1395,26 +702,16 @@ class Auth extends Basic_Component {
           )}
         </div>
         <item.bottom
-          links={[
-            { text: "账号登录", href: "/auth/login" },
-            {
-              text: "验证码登录",
-              href: "/auth/mobile",
-            },
-            {
-              text: "忘记密码",
-              href: "/auth/forgot_password",
-            },
-            {
-              text: "注册账号",
-              href: "/auth/register",
-            },
-          ]}
+          links={{ login: {}, mobile: {}, forgot_password: {}, register: {} }}
           bottom={{ wechat: 1 }}
         />
       </item.content>
     );
   }
+  /**
+   * render 渲染  scan_check
+   * @return obj
+   */
   __render_qrcode_check() {
     return (
       <div
@@ -1438,7 +735,7 @@ class Auth extends Basic_Component {
             height: "200px",
           }}
         >
-          页面即将关闭,若不能自动关闭,手动关闭即可
+          页面即将关闭,若不能自动关闭,请手动关闭即可
         </div>
         <div
           className={styles.mask}
@@ -1457,8 +754,131 @@ class Auth extends Basic_Component {
       </div>
     );
   }
+  /**
+   * 验证账号
+   **/
+  __render_again() {
+    return (
+      <item.content title="验证账号">
+        {this.__render_component_captcha_number("again")}
+        {this.__render_component_captcha_mobile("again")}
+
+        <item.bottom
+          links={{
+            login: {
+              onClick: () => {
+                this.handle_logout();
+              },
+            },
+          }}
+          bottom={{ wechat: 1 }}
+          button={{
+            auth_btn_disabled:
+              this.state.auth_btn_disabled && !this.state.data.captcha_mobile
+                ? true
+                : false,
+            text: "验证",
+            click: () => {
+              this.handle_again("activate");
+            },
+          }}
+        />
+      </item.content>
+    );
+  }
+
+  /**
+   * render 渲染  账号 组件
+   * @return obj
+   */
+  __render_component_account(type, action, placeholder) {
+    const data = this.state.data;
+    return (
+      <item.account
+        onChange={(event) => {
+          this.handle_change_input(type, event.target.value);
+        }}
+        value={data[type]}
+        onKeyUp={(o) => {
+          this.handle_keyup(o);
+        }}
+        placeholder={placeholder}
+        autocomplete
+      />
+    );
+  }
+  /**
+   * render 渲染  验证码 组件
+   * @return obj
+   */
+  __render_component_captcha_number(type) {
+    const state = this.state;
+    return (
+      <item.captcha_number
+        onChange={(event) => {
+          this.handle_change_input("captcha_code", event.target.value);
+        }}
+        captcha_type={state.data.captcha_type}
+        captcha_url={state.captcha_url}
+        value={state.data.captcha_code}
+        chang_captcha={this.handle_chang_captcha}
+        disabled={state.captcha_btn_disabled}
+        load={this.handle_captcha_load}
+        onKeyUp={(o) => {
+          this.handle_keyup(o);
+        }}
+      />
+    );
+  }
+  /**
+   * render 渲染  验证码 组件
+   * @return obj
+   */
+  __render_component_captcha_mobile(type) {
+    const state = this.state;
+    const data = state.data;
+    return (
+      <item.captcha_mobile
+        onChange={(event) => {
+          this.handle_change_input("captcha_mobile", event.target.value);
+        }}
+        input_change={data.user_id}
+        valicode_text={state.valicode_text || "获取验证码"}
+        value={data.captcha_mobile}
+        onKeyUp={(o) => {
+          this.handle_keyup(o, "captcha");
+        }}
+        onClick={(o) => {
+          this.handle_proxy("captcha");
+        }}
+        captcha_btn_disabled={state.captcha_btn_disabled}
+      />
+    );
+  }
+  /**
+   * render 渲染  密码 组件
+   * @return obj
+   */
+  __render_component_password() {
+    const data = this.state.data;
+    return (
+      <item.password
+        onChange={(event) => {
+          this.handle_change_input("password", event.target.value);
+        }}
+        value={data.password}
+        onKeyUp={(o) => {
+          this.handle_keyup(o);
+        }}
+        eyes_state={data.eyes_state}
+        eyes_icon={data.eyes_state ? Eyes_open : Eyes_close}
+        handle_change_eye_state={() => {
+          this.handle_change_input("eyes_state", !data.eyes_state);
+        }}
+      />
+    );
+  }
+
   /*----------------------4 render end  ----------------------*/
 }
-export default connect((store) => ({
-  ...store
-}))(Auth);
+export default connect((store) => ({ ...store }))(Auth);

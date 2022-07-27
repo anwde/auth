@@ -1,11 +1,13 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom"; 
 
-export const PrivateRoute = ({ component: Component, ...rest }) => (
+export const PrivateRoute = ({ component: Component, ...rest }) =>{
+  // console.log(rest);
+return (
   <Route
     {...rest}
     render={(props) => {
-      // console.log('data=>111',Component);
+      console.log('data=>111',props);
       // const currentUser = AuthenticationService.currentUserValue;
       // if (!currentUser) {
       //   // not logged in so redirect to login page with the return url
@@ -24,5 +26,6 @@ export const PrivateRoute = ({ component: Component, ...rest }) => (
     }}
   />
 );
+} 
 
 export default PrivateRoute;

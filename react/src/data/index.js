@@ -1,6 +1,2 @@
-import mock from "./mock";
-import "./chat/ChatData";  
-import "./todo/TodoData";
-import "./notes/NotesData";
-import "./contacts/ContactsData";
+import mock from "./mock"; 
 mock.onAny().passThrough();

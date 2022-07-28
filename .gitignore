@@ -8,7 +8,7 @@ react/.pnp.js
 # testing
 react/coverage
 
-react/src/test.js
+# react/src/test.js
 
 # production
 react/build

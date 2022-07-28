@@ -1,15 +1,17 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/react/node_modules
-/react/.pnp
-/react/.pnp.js
+react/node_modules
+react/.pnp
+react/.pnp.js
 
 # testing
-/react/coverage
+react/coverage
+
+react/src/test.js
 
 # production
-/react/build
+react/build
 
 # misc
 .DS_Store

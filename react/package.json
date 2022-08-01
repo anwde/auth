@@ -6,8 +6,8 @@
   "description": "authorize to use code",
   "main": "index.js",
   "proxy1": "http://manage.soschina.org.cn/",
-  "proxy": "http://admin.system.com/",
-  "proxy2": "https://a.youyan.cc/",
+  "proxy2": "http://admin.system.com/",
+  "proxy": "https://authorize.youyan.cc/",
   "scripts": {
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",

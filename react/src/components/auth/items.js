@@ -172,6 +172,7 @@ var bottom = (props) => {
     scan: { text: "扫码登录" },
   };
   const { button = {}, links = {} } = props;
+  // console.log(props)
   return (
     <div className={styles.li}>
       {button.text ? (

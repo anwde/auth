@@ -64,7 +64,7 @@ class App extends React.Component {
     webapi.customizer.launch();
   }
   render() { 
-    console.log(this.state.server);
+    // console.log(this.state.server);
     return (
       <ConfigProvider locale={zhCN}>
         <BrowserRouter>

@@ -9,8 +9,8 @@ import Eyes_close from "@/assets/images/auth/eyes_close.png";
 import Invite_person from "@/assets/images/auth/invite_person.png";
 import { Drawer } from "antd";
 import { SlideFixed } from "@/components/captcha/index.js";
-const original_captcha_url =
-  "/auth/captcha?u_action=graph&reset=1&height=30";
+import { stat } from "fs";
+const original_captcha_url = "/auth/captcha?u_action=graph&reset=1&height=30";
 
 let customizer_styles = {};
 // console.log("data=>", styles);
@@ -33,6 +33,7 @@ class Auth extends Basic_Component {
       valicode_text: "",
       input_disabled: false, //邀请人输入框
       captcha_btn_disabled: false,
+      //按钮是否禁用
       auth_btn_disabled: true,
       data: {
         eyes_state: false, //眼睛状态
@@ -271,7 +272,7 @@ class Auth extends Basic_Component {
         if (val.length > 6) {
           return false;
         }
-        break; 
+        break;
       //账号
       case "account":
         val = val.replace(/(^\s*)|(\s*$)/g, "");
@@ -526,8 +527,15 @@ class Auth extends Basic_Component {
     }
     const state = this.state;
     const data = state.data;
+    if (u_action === "activate") {
+      if (data.verification_user_id === 0) {
+        this.modal("请获取验证码");
+        return {};
+      }
+    }
     if (data.captcha_code === "") {
-      return this.modal("请输入验证码");
+      this.modal("请输入验证码");
+      return {};
     }
     data.u_action = u_action;
     const res = await webapi.request.post("auth/again", { data });
@@ -541,7 +549,9 @@ class Auth extends Basic_Component {
         data.captcha_code = "";
         data.captcha_mobile = "";
       }
-
+      if (res.code === 11030) {
+        data.captcha_code = "";
+      }
       this.setState({
         data,
       });
@@ -549,12 +559,13 @@ class Auth extends Basic_Component {
       return this.modal(res.message);
     }
     if (data.u_action === "captcha") {
+      data.verification_user_id = res.data.user_id;
       this.settnterval(120);
       this.setState({
         auth_btn_disabled: false,
         data,
       });
-      this.modal(res.message);
+      // this.modal(res.message);
       return res;
     }
     if (data.u_action === "activate") {
@@ -758,6 +769,9 @@ class Auth extends Basic_Component {
    * 验证账号
    **/
   __render_again() {
+    const state = this.state;
+    const data = state.data;
+    // console.log(state);
     return (
       <item.content title="验证账号">
         {this.__render_component_captcha_number("again")}
@@ -774,7 +788,8 @@ class Auth extends Basic_Component {
           bottom={{ wechat: 1 }}
           button={{
             auth_btn_disabled:
-              this.state.auth_btn_disabled && !this.state.data.captcha_mobile
+              (state.auth_btn_disabled && data.verification_user_id === 0) ||
+              data.captcha_mobile === ""
                 ? true
                 : false,
             text: "验证",

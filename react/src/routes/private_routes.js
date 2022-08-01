@@ -7,7 +7,7 @@ return (
   <Route
     {...rest}
     render={(props) => {
-      console.log('data=>111',props);
+      // console.log('data=>111',props);
       // const currentUser = AuthenticationService.currentUserValue;
       // if (!currentUser) {
       //   // not logged in so redirect to login page with the return url

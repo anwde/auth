@@ -1,15 +1,12 @@
-import React from "react";
-import { connect } from "react-redux";
-import webapi from "@/utils/webapi";
-import Basic_Component from "@/components/base/basic_component.js";
+import Eyes_close from "@/assets/images/auth/eyes_close.png";
+import Eyes_open from "@/assets/images/auth/eyes_open.png";
 import styles from "@/assets/styles/skin2.less";
 import item from "@/components/auth/items";
-import Eyes_open from "@/assets/images/auth/eyes_open.png";
-import Eyes_close from "@/assets/images/auth/eyes_close.png";
-import Invite_person from "@/assets/images/auth/invite_person.png";
+import Basic_Component from "@/components/base/basic_component.js";
+import webapi from "@/utils/webapi";
 import { Drawer } from "antd";
-import { SlideFixed } from "@/components/captcha/index.js";
-import { stat } from "fs";
+import React from "react";
+import { connect } from "react-redux";
 const original_captcha_url = "/auth/captcha?u_action=graph&reset=1&height=30";
 
 let customizer_styles = {};
@@ -43,6 +40,15 @@ class Auth extends Basic_Component {
         account: "", //账号
         user_id: 0,
         verification_user_id: 0,
+        oauth:{
+          google:{switch:0},
+          facebook:{switch:0},
+          wechat:{switch:0},
+          qq:{switch:0},
+          weibo:{switch:0},
+          twitter:{switch:0},
+          instagram:{switch:0}, 
+        }
       },
       captcha_mobile: true,
       captcha: true,
@@ -192,6 +198,29 @@ class Auth extends Basic_Component {
   /*----------------------2 init end  ----------------------*/
 
   /*----------------------3 handle start----------------------*/
+  //同意、拒绝协议
+  handle_is_agree_checkbox = () => {
+    this.setState({
+      is_agree: !this.state.is_agree,
+    });
+  };
+  //获取协议内容
+  handle_agreement = async (type) => {
+    if (this.props.server.loading) {
+      return false;
+    }
+    const data = await webapi.request.post("server/agreement", {
+      data: {
+        type,
+      },
+    });
+    if (data.status === "success") {
+      this.setState({
+        drawer_visible: true,
+        drawer_data: data.data
+      });
+    }
+  };
   handle_qrcode_setInterval() {
     this.__setinterval(
       100,
@@ -314,6 +343,9 @@ class Auth extends Basic_Component {
     if (this.props.server.loading) {
       return {};
     }
+    if (!this.state.is_agree) {
+      return this.modal("请先同意《用户协议》和《隐私声明》");
+    }
     if (!data.account) {
       this.modal("请输入手机号/邮箱/用户名");
       return {};
@@ -322,9 +354,7 @@ class Auth extends Basic_Component {
       this.modal("请输入密码");
       return {};
     }
-    if (!this.state.is_agree) {
-      // return this.modal("请先同意《使用协议》和《隐私声明》");
-    }
+    
     if (!data.captcha_code) {
       if (data.captcha_type === "slide") {
         this.handle_captcha_show();
@@ -367,6 +397,9 @@ class Auth extends Basic_Component {
     // console.log(data);
     if (this.props.server.loading) {
       return {};
+    }
+    if (!this.state.is_agree) {
+      return this.modal("请先同意《用户协议》和《隐私声明》");
     }
     if (data.mobile === "") {
       return this.modal("请输入手机号码");
@@ -600,8 +633,14 @@ class Auth extends Basic_Component {
         )}
         {this.__render_component_captcha_number("login")}
         {this.__render_component_password("login")}
-
+        <item.agreement
+          is_agree_checkbox={this.handle_is_agree_checkbox}
+          is_agree_value={state.is_agree}
+          user_agreement={()=>{this.handle_agreement('user')}}
+          privacy_statement={()=>{this.handle_agreement('privacy')}}
+        />
         <item.bottom
+          oauth={data.oauth}
           loading={this.props.server.loading}
           links={{ mobile: {}, scan: {}, forgot_password: {}, register: {} }}
           button={{
@@ -626,8 +665,14 @@ class Auth extends Basic_Component {
         {this.__render_component_account("mobile", "mobile", "请输入手机号")}
         {this.__render_component_captcha_number("mobile")}
         {this.__render_component_captcha_mobile("mobile")}
-
+        <item.agreement
+          is_agree_checkbox={this.handle_is_agree_checkbox}
+          is_agree_value={state.is_agree}
+          user_agreement={()=>{this.handle_agreement('user')}}
+          privacy_statement={()=>{this.handle_agreement('privacy')}}
+        />
         <item.bottom
+          oauth={data.oauth}
           links={{ login: {}, scan: {}, forgot_password: {}, register: {} }}
           bottom={{ wechat: 1 }}
           button={{
@@ -689,11 +734,12 @@ class Auth extends Basic_Component {
    * @return obj
    */
   __render_scan() {
+    const state=this.state;
     return (
       <item.content title="扫码登录">
         <div className={styles.qrcode} style={{ position: "relative" }}>
-          <img src={this.state.scan_url} height="150" alt="加载中" />
-          {this.state.timeout ? (
+          <img src={state.scan_url} height="150" alt="加载中" />
+          {state.timeout ? (
             <div
               className={styles.qrcode_check}
               onClick={() => {
@@ -712,6 +758,7 @@ class Auth extends Basic_Component {
             ""
           )}
         </div>
+        
         <item.bottom
           links={{ login: {}, mobile: {}, forgot_password: {}, register: {} }}
           bottom={{ wechat: 1 }}

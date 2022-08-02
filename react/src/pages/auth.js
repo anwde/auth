@@ -40,15 +40,15 @@ class Auth extends Basic_Component {
         account: "", //账号
         user_id: 0,
         verification_user_id: 0,
-        oauth:{
-          google:{switch:0},
-          facebook:{switch:0},
-          wechat:{switch:0},
-          qq:{switch:0},
-          weibo:{switch:0},
-          twitter:{switch:0},
-          instagram:{switch:0}, 
-        }
+        oauth: {
+          google: { switch: 0 },
+          facebook: { switch: 0 },
+          wechat: { switch: 0 },
+          qq: { switch: 0 },
+          weibo: { switch: 0 },
+          twitter: { switch: 0 },
+          instagram: { switch: 0 },
+        },
       },
       captcha_mobile: true,
       captcha: true,
@@ -217,7 +217,7 @@ class Auth extends Basic_Component {
     if (data.status === "success") {
       this.setState({
         drawer_visible: true,
-        drawer_data: data.data
+        drawer_data: data.data,
       });
     }
   };
@@ -354,7 +354,7 @@ class Auth extends Basic_Component {
       this.modal("请输入密码");
       return {};
     }
-    
+
     if (!data.captcha_code) {
       if (data.captcha_type === "slide") {
         this.handle_captcha_show();
@@ -636,8 +636,12 @@ class Auth extends Basic_Component {
         <item.agreement
           is_agree_checkbox={this.handle_is_agree_checkbox}
           is_agree_value={state.is_agree}
-          user_agreement={()=>{this.handle_agreement('user')}}
-          privacy_statement={()=>{this.handle_agreement('privacy')}}
+          user_agreement={() => {
+            this.handle_agreement("user");
+          }}
+          privacy_statement={() => {
+            this.handle_agreement("privacy");
+          }}
         />
         <item.bottom
           oauth={data.oauth}
@@ -668,8 +672,12 @@ class Auth extends Basic_Component {
         <item.agreement
           is_agree_checkbox={this.handle_is_agree_checkbox}
           is_agree_value={state.is_agree}
-          user_agreement={()=>{this.handle_agreement('user')}}
-          privacy_statement={()=>{this.handle_agreement('privacy')}}
+          user_agreement={() => {
+            this.handle_agreement("user");
+          }}
+          privacy_statement={() => {
+            this.handle_agreement("privacy");
+          }}
         />
         <item.bottom
           oauth={data.oauth}
@@ -734,7 +742,7 @@ class Auth extends Basic_Component {
    * @return obj
    */
   __render_scan() {
-    const state=this.state;
+    const state = this.state;
     return (
       <item.content title="扫码登录">
         <div className={styles.qrcode} style={{ position: "relative" }}>
@@ -748,8 +756,17 @@ class Auth extends Basic_Component {
             >
               <div className={styles.void}>
                 <i
-                  className={["fa fa-refresh", styles["fa-refresh"]].join(" ")}
-                ></i>
+                  className={styles.icon}
+                >
+                  <svg
+                    viewBox="0 0 1024 1024"
+                    version="1.1"
+                    xmlns="http://www.w3.org/2000/svg"
+                    className={styles.svg}
+                  >
+                    <path d="M895.469672 511.745197c0-146.498562-82.099856-273.805016-202.78859-338.470805l22.072715-46.630017c-4.50664-12.609179-18.382673-19.176758-30.991852-14.670118l-92.436272 33.040511c-12.609179 4.50664-19.176758 18.382673-14.670117 30.991852l33.04051 92.436272c4.50664 12.609179 18.382673 19.176758 30.991852 14.670117l24.581861-51.929719c99.069343 54.335513 166.240185 159.596881 166.240185 280.561907 0 165.56685-125.817544 301.747415-287.057855 318.14692v0.022513c-17.730826 0-32.105209 14.374382-32.105208 32.105209 0 17.730826 14.374382 32.105209 32.105208 32.105208a32.234145 32.234145 0 0 0 6.135744-0.592494C744.270041 874.039593 895.469672 710.564381 895.469672 511.745197zM480.616222 129.23948c-0.041956 0-0.082888 0.00307-0.124843 0.00307v-0.00307l-0.047072 0.004093c-1.892093 0.010233-3.744277 0.189312-5.545297 0.5137-194.674794 18.529005-346.957083 182.459588-346.957083 381.987924 0 147.431817 83.146699 275.42798 205.097168 339.700819l-24.814152 52.419883c4.50664 12.609179 18.382673 19.176758 30.991852 14.670118l92.436272-33.040511c12.609179-4.50664 19.176758-18.382673 14.670118-30.991851l-33.040511-92.436273c-4.50664-12.609179-18.382673-19.176758-30.991851-14.670117l-21.853727 46.167482c-100.326986-53.964052-168.535461-159.920246-168.535461-281.81955 0-166.089759 126.616746-302.591643 288.588721-318.284044v-0.014326c0.041956 0 0.082888 0.00307 0.124843 0.00307 17.730826 0 32.105209-14.374382 32.105209-32.105209 0.001023-17.730826-14.373359-32.105209-32.104186-32.105208z"></path>
+                  </svg>
+                </i>
                 <p className={styles.txt}>二维码失效，点击刷新</p>
               </div>
               <div className={styles.mask}></div>
@@ -758,7 +775,7 @@ class Auth extends Basic_Component {
             ""
           )}
         </div>
-        
+
         <item.bottom
           links={{ login: {}, mobile: {}, forgot_password: {}, register: {} }}
           bottom={{ wechat: 1 }}

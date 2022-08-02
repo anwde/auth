@@ -828,7 +828,7 @@ li {
   display: flex;
   justify-content: space-between;
   margin-top: 18px;
-  
+
   .checkinput {
     margin-right: 0;
     color: var(--checkinput-color, #212529);
@@ -844,10 +844,10 @@ li {
     &:active,
     &:focus,
     &::hover {
-      border-color: #1890ff; 
-      color: #1890ff; 
+      border-color: #1890ff;
+      color: #1890ff;
     }
-  
+
     .checkbox {
       position: absolute;
       top: 0;
@@ -857,7 +857,7 @@ li {
       box-sizing: border-box;
       padding: 0;
     }
-    
+
     .indicator {
       background: #fff;
       position: relative;
@@ -870,7 +870,7 @@ li {
       border-radius: 2px;
       border-radius: var(--checkbox-indicator-border-radius, 2px);
       vertical-align: middle;
-     
+
       &:after {
         top: 50%;
         left: 50%;
@@ -884,13 +884,13 @@ li {
         content: " ";
       }
     }
-    .checked{
-      border-color: #197afa; 
+    .checked {
+      border-color: #197afa;
       background: #197afa;
       &:after {
         border-color: #fff;
-        transform: translate(-50%,-65%) rotate(-45deg);
-    }
+        transform: translate(-50%, -65%) rotate(-45deg);
+      }
     }
     .span {
       padding: 0 8px;
@@ -1016,7 +1016,6 @@ li {
   list-style: none;
 }
 
-  
 ::-webkit-scrollbar {
   width: 11px;
   height: 5px;
@@ -1055,7 +1054,7 @@ li {
     }
   }
 }
- 
+
 .inputbox {
   display: -ms-flexbox;
   display: flex;
@@ -1161,16 +1160,13 @@ li {
     }
   }
 }
- 
-
-
 
 .btm_bottom {
   margin-top: 20px;
   .list {
-    display:flex;
+    display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
     .dict {
       a {
         border: 1px solid #ddd;
@@ -1181,7 +1177,7 @@ li {
         margin: 0 5px;
         height: 40px;
         width: 40px;
-        .icon{
+        .icon {
           width: 20px;
           height: 20px;
           .svg {
@@ -1192,9 +1188,55 @@ li {
             stroke: #989aa2;
           }
         }
-        
       }
-      
+    }
+  }
+}
+.qrcode {
+  .qrcode_check {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    color: #fff;
+    cursor: pointer;
+    .mask {
+      position: absolute;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      opacity: 0.7;
+      filter: alpha(opacity=70);
+      -moz-opacity: 0.7;
+      background: #000;
+    }
+    .void {
+      height: 52px;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      left: 0;
+      margin-top: -26px;
+      z-index: 11;
+      text-align: center;
+      .icon { 
+        width: 26px;
+        height: 23px;
+        margin: 0 auto 10px;
+        display: block; 
+        .svg {
+          display: block;
+          height: 100%;
+          width: 100%;
+          fill: #989aa2;
+          stroke: #989aa2;
+        }
+      }
+
+      .txt {
+      }
     }
   }
 }

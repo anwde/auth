@@ -22,7 +22,7 @@ const patch = function (url, data) {
 };
 const del = function (url, data) {
   return http_request({ method: "del", url: url, ...data });
-}; 
+};
 const headers = function () {
   const data = {
     "content-type": "application/x-www-form-urlencoded",
@@ -44,7 +44,7 @@ const http_request = async function (config) {
   } else {
     config = config || {};
   }
-  const defaults = { method: "get", cache: false };
+  const defaults = { method: "get", cache: false, loading: true };
   config = Object.assign(defaults, config);
 
   const options = {
@@ -71,11 +71,15 @@ const http_request = async function (config) {
     }
     if (!josn) {
       //   console.log(options.url, arguments);
-      ToggleLoading.state = true;
-      store.dispatch(ToggleLoading);
+      if (config.loading) {
+        ToggleLoading.state = true;
+        store.dispatch(ToggleLoading);
+      }
       let res = await axios(options);
-      ToggleLoading.state = false;
-      store.dispatch(ToggleLoading);
+      if (config.loading) {
+        ToggleLoading.state = false;
+        store.dispatch(ToggleLoading);
+      }
       josn =
         JSON.parse(
           utils.decrypt(
@@ -83,7 +87,7 @@ const http_request = async function (config) {
             window.cs,
             utils.md5(res.headers["content-encrypt"]).substr(8, 16)
           )
-        ) || {}; 
+        ) || {};
       if (
         cache.get("test") === "development" ||
         process.env.NODE_ENV === "development"
@@ -104,13 +108,13 @@ const http_request = async function (config) {
           60 * 60 * 5
         );
       }
-    } 
+    }
     if (josn.code === 10005) {
       notify.error({
         message: "通知",
         description: `${josn.message}`,
       });
-    } 
+    }
     if (josn.code === 11003) {
       if (
         !(

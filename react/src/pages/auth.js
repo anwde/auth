@@ -410,7 +410,7 @@ class Auth extends Basic_Component {
     if (data.captcha_code === "") {
       return this.modal("请输入验证码");
     }
-    if (u_action == "activate") {
+    if (u_action === "activate") {
       if (!data.user_id) {
         return this.modal("请获取验证码");
       }
@@ -418,7 +418,7 @@ class Auth extends Basic_Component {
         return this.modal("请输入验证码");
       }
     }
-    if (u_action == "captcha") {
+    if (u_action === "captcha") {
       if (state.captcha_btn_disabled) {
         return false;
       }
@@ -451,14 +451,14 @@ class Auth extends Basic_Component {
       this.handle_chang_captcha();
       return this.modal(res.message);
     }
-    if (u_action == "captcha") {
+    if (u_action === "captcha") {
       this.settnterval();
       data.user_id = res.data.user_id;
       this.setState({
         data,
       });
     }
-    if (u_action == "activate") {
+    if (u_action === "activate") {
       this.redirect(res);
     }
   };
@@ -478,12 +478,12 @@ class Auth extends Basic_Component {
     if (data.captcha_code === "") {
       return this.modal("请输入验证码");
     }
-    if (u_action == "captcha") {
+    if (u_action === "captcha") {
       if (state.captcha_btn_disabled) {
         return false;
       }
     }
-    if (u_action == "verification") {
+    if (u_action === "verification") {
       if (data.user_id === 0) {
         return this.modal("请获取验证码");
       }
@@ -491,7 +491,7 @@ class Auth extends Basic_Component {
         return this.modal("请输入验证码");
       }
     }
-    if (u_action == "activate") {
+    if (u_action === "activate") {
       if (data.verification_user_id === 0) {
         return this.modal("请获取验证码");
       }
@@ -525,20 +525,20 @@ class Auth extends Basic_Component {
       this.handle_chang_captcha();
       return this.modal(res.message);
     }
-    if (u_action == "captcha") {
+    if (u_action === "captcha") {
       this.settnterval();
       data.user_id = res.data.user_id;
       this.setState({
         data,
       });
     }
-    if (u_action == "verification") {
+    if (u_action === "verification") {
       data.verification_user_id = res.data.user_id;
       this.setState({
         data,
       });
     }
-    if (u_action == "activate") {
+    if (u_action === "activate") {
       this.redirect(res);
     }
   };

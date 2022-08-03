@@ -1,11 +1,10 @@
 {
   "name": "authorize",
   "version": "1.0.0",
-  "homepage": "",
+  "homepage": "https://www.react.com/",
   "private": true,
   "description": "authorize to use code",
-  "main": "index.js",
-  "proxy1": "http://manage.soschina.org.cn/",
+  "main": "index.js", 
   "proxy2": "http://admin.system.com/",
   "proxy": "https://authorize.youyan.cc/",
   "scripts": {

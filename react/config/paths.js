@@ -20,6 +20,9 @@ const publicUrlOrPath = getPublicUrlOrPath(
   require(resolveApp('package.json')).homepage,
   process.env.PUBLIC_URL
 );
+const envPublicUrl = process.env.PUBLIC_URL;
+const getPublicUrl = appPackageJson =>
+  envPublicUrl || (require(appPackageJson).homepage+require(appPackageJson).version)+'/';
 
 const buildPath = process.env.BUILD_PATH || 'build';
 
@@ -67,6 +70,7 @@ module.exports = {
   proxySetup: resolveApp('src/setupProxy.js'),
   appNodeModules: resolveApp('node_modules'),
   swSrc: resolveModule(resolveApp, 'src/service-worker'),
+  // publicUrlOrPath:getPublicUrl(resolveApp('package.json')),
   publicUrlOrPath,
 };
 

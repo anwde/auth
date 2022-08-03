@@ -1,7 +1,7 @@
 {
   "name": "authorize",
   "version": "1.0.0",
-  "homepage": "https://www.react.com/",
+  "homepage": "https://res1.youyan.cc/",
   "private": true,
   "description": "authorize to use code",
   "main": "index.js", 

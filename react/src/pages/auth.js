@@ -22,7 +22,7 @@ class Auth extends Basic_Component {
     //   window.appid +
     //   ".less");
     customizer_styles = require("@/assets/styles/skin2-313.less");
-    console.log(customizer_styles, styles);
+    // console.log(customizer_styles, styles);
   }
 
   __init_state_after() {

@@ -8,7 +8,7 @@ const query = () => parse(window.location.search.split("?")[1]);
 const build_url = (uri) => {
   return uri + "?" + qs.stringify(query());
 };
-console.log(styles);
+// console.log(styles);
 var account = function (props = {}) {
   return (
     <div className={styles.li}>

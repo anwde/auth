@@ -1,9 +1,9 @@
 {
-  "name": "authorize",
+  "name": "auth",
   "version": "1.0.0",
   "homepage": "https://res1.youyan.cc/auth/",
   "private": true,
-  "description": "authorize to use code",
+  "description": "auth to use code",
   "main": "index.js", 
   "proxy2": "http://admin.system.com/",
   "proxy": "https://authorize.youyan.cc/",

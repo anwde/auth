@@ -1,8 +1,7 @@
 import { lazy } from "react";
-const FullLayout = lazy(() => import("../layouts/FullLayout.js"));
 const BlankLayout = lazy(() => import("../layouts/BlankLayout.js"));
 
-var indexRoutes = [
+const indexRoutes = [
   { path: "/auth/", component: BlankLayout },
   { path: "/", component: BlankLayout },
 ];

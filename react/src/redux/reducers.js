@@ -1,9 +1,6 @@
-import { combineReducers } from "redux";
-import settings from "./settings/Reducer"; 
+import { combineReducers } from "redux"; 
 import serverReducer from "./server/reducer"; 
-const reducers = combineReducers({
-  settings,
-   
+const reducers = combineReducers({ 
   server:serverReducer
 });
 

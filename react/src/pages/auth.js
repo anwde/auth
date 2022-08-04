@@ -125,7 +125,9 @@ class Auth extends Basic_Component {
     if (method !== "" && method in this) {
       return this[method](data);
     }
-    webapi.utils.redirect(data);
+    if(data.redirect){
+      webapi.utils.redirect(data);
+    } 
   }
   settnterval(t = 59) {
     this.__setinterval(

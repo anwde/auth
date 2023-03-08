@@ -1,0 +1,8 @@
+/* @import '~@ant-design/pro-form/dist/form.css';
+@import '~@ant-design/pro-table/dist/table.css';
+@import '~@ant-design/pro-layout/dist/layout.css';
+@import '~antd/dist/antd.css'; */
+@import './assets/icons/font-awesome/css/font-awesome.min.css';
+::-webkit-scrollbar {
+    display: none;
+  }

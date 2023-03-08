@@ -1,0 +1,350 @@
+html,
+body,
+div,
+span,
+applet,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+a,
+abbr,
+acronym,
+address,
+big,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+s,
+samp,
+small,
+strike,
+strong,
+sub,
+sup,
+tt,
+var,
+b,
+u,
+i,
+center,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+embed,
+figure,
+figcaption,
+footer,
+header,
+hgroup,
+menu,
+nav,
+output,
+ruby,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 100%;
+  font: inherit;
+  vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article,
+aside,
+details,
+figcaption,
+figure,
+footer,
+header,
+hgroup,
+menu,
+nav,
+section {
+  display: block;
+}
+body {
+  line-height: 1;
+}
+ol,
+ul {
+  list-style: none;
+}
+blockquote,
+q {
+  quotes: none;
+}
+blockquote:before,
+blockquote:after,
+q:before,
+q:after {
+  content: "";
+  content: none;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+* {
+  word-wrap: break-word;
+  outline: none;
+}
+body {
+  text-align: center;
+  background-color: #d8dbe4;
+}
+body,
+td,
+input,
+textarea,
+select,
+button {
+  color: #666;
+  font: 12px "Lucida Grande", Verdana, Lucida, Helvetica, Arial, "Simsun",
+    sans-serif;
+}
+body,
+ul,
+dl,
+dd,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+form,
+fieldset {
+  margin: 0;
+  padding: 0;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 12px;
+}
+a {
+  color: #2366a8;
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+a img {
+  border: none;
+}
+em,
+cite,
+th {
+  font-style: normal;
+  font-weight: normal;
+}
+table {
+  border-collapse: collapse;
+}
+@screen-md: 768px;
+@screen-md-min: @screen-md;
+ 
+
+/*样式重置*/
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: #515151;
+}
+
+p {
+  margin: 0;
+}
+
+a:active,
+a:hover {
+  outline: 0;
+  text-decoration: none;
+}
+
+a,
+input,
+button {
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+input,
+button {
+  -webkit-appearance: none;
+  border-radius: none;
+}
+
+body * {
+  -webkit-text-size-adjust: 100%;
+}
+
+.disabled() {
+  cursor: not-allowed;
+  position: absolute;
+  border-color: #f0f0f0;
+  outline: 0;
+  &::before {
+    position: absolute;
+    inset: -1px;
+    z-index: 1;
+    background: #f0f0f0;
+    border-radius: inherit;
+    opacity: 0.35;
+    transition: opacity 0.2s;
+    content: "";
+    pointer-events: none;
+  }
+}
+/*清楚浮动样式*/
+.clearfix:before,
+.clearfix:after {
+  display: table;
+  content: " ";
+}
+body, html {
+  width: 100%;
+  height: 100%;
+}
+*,
+:after,
+:before {
+  box-sizing: border-box;
+}
+.clearfix:after {
+  clear: both;
+}
+input:-webkit-autofill {
+  box-shadow: 0 0 0px 1000px white inset;
+}
+.container { 
+  .content {
+    .spread {
+      
+    }
+    .auth {
+      .title {
+        
+      }
+      .ul { 
+        .li {
+          .clear {
+            clear: both;
+          }
+          .text {
+            
+          }
+          .inputbox {
+            .button {
+              &.disabled {
+                .disabled;
+              }
+            }
+            .eyes {
+            }
+            .captcha {
+              cursor: pointer;
+            }
+            .input {
+            }
+          }
+          .lable {
+            .button {
+              &.disabled {
+                .disabled;
+              }
+            }
+          }
+          .btm_left {
+            .button {
+              &.disabled {
+                .disabled;
+              }
+            }
+          }
+          .btm_right {
+            a {
+              line-height: 35px;
+              padding-right: 10px;
+            }
+          }
+          .btm_bottom {
+            .list {
+              .dict {
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+@media (max-width: @screen-md-min) {
+  body {
+    height: 100%;
+    margin: 0;
+    font-size: 0.2rem;
+    line-height: 1;
+    background: #f3f3f3;
+    -webkit-font-smoothing: antialiased; /*chrome、safari*/
+    -moz-osx-font-smoothing: grayscale; /*firefox*/
+  }
+  html {
+    /*此时1rem = 100px*/
+    height: 100%;
+    font-family: "微软雅黑", Tahoma, Helvetica, Arial, sans-serif;
+    font-size: calc(100vw / 7.5);
+    font-size: -webkit-calc(100vw / 7.5);
+    font-size: -moz-calc(100vw / 7.5);
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    -webkit-text-size-adjust: none;
+    color: #717171;
+  }
+}

@@ -1,0 +1,21 @@
+@import  "core.less"; 
+.content .spread {
+    width: 50%;
+    position: relative; 
+    background: #fff;
+    background-image: url("~@/assets/images/auth/spread@2x.png");
+    background-position: top left;
+    background-size: cover;
+    &::before {
+      content: "";
+      width: 100px;
+      height: 64px;
+      display: block;
+      background-image: data-uri("~@/assets/images/auth/logo@2x.png");
+      background-size: cover;
+      z-index: 0;
+      position: absolute;
+      top: 31px;
+      left: 27px;
+    }
+  }

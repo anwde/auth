@@ -1,0 +1,44 @@
+.content_article {
+  height: calc(100vh - 340px);
+  overflow-y: hidden;
+  overflow-y: scroll;
+  .ul {
+    margin: 10px 0;
+    overflow: hidden;
+    direction: ltr;
+    list-style: none;
+    .li {
+      position: relative;
+      float: left;
+      width: 16.66%;
+      height: 100px;
+      margin: 3px;
+      padding: 10px 0 0;
+      overflow: hidden;
+      color: #555;
+      text-align: center;
+      list-style: none;
+      background-color: inherit;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: "color .3s ease-in-out;background-color 0.3s ease-in-out";
+      &:hover,&.hover {
+        color: #fff;
+        background-color: #1890ff;
+      }
+      .anticon {
+        margin: 12px 0 8px;
+        font-size: 36px;
+        transition: transform 0.3s ease-in-out;
+        will-change: transform;
+      }
+      .anticon_class {
+        display: "block";
+        font-family: " Lucida Console;Consolas;Monaco;Andale Mono;Ubuntu Mono;monospace";
+        white-space: "nowrap";
+        text-align: "center";
+        transform: "scale(.83)";
+      }
+    }
+  }
+}

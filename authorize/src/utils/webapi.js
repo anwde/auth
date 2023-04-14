@@ -8,6 +8,7 @@ import jsonp from "./jsonp";
 import store from "@/redux/store";
 import customizer from "./customizer";
 const confirm = function (options = {}) {
+  console.log(options);
   modal.confirm({
     title: options.title || "提示",
     content: options.content || "删除后数据不可恢复，确认删除吗?",

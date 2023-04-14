@@ -1,6 +1,6 @@
 import React from "react";
-import Basic_Component from "../../components/base/component";
-import webapi from "../../utils/webapi";
+import Basic_Component from "../components/base/component";
+import webapi from "../utils/webapi";
 type D_data = {
   [key: number]: { id: number; name: string };
 };

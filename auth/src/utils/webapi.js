@@ -33,34 +33,12 @@ async function server() {
     window.ucdata = data.ucdata;
     const t = { type: "SERVER" };
     t.data = { ...data };
-    store.dispatch(t); 
-    customer();
-    applications();
+    store.dispatch(t);  
     return data;
   }
   return { code: data.code };
 }
-async function customer(reset = false) {
-  let res = await request.get("server/customer", { reset: reset, cache: true });
-  if (res.code === 10000) {
-    store.dispatch({ type: "CUSTOMER", data: res.data });
-    return res.data;
-  }
-  return {};
-}
-
-async function applications(reset = false) {
-  let res = await request.get("server/applications", {
-    reset: reset,
-    cache: true,
-  });
-  if (res.code === 10000) {
-    store.dispatch({ type: "APPLICATIONS", data: res.data });
-    return res.data;
-  }
-  return {};
-}
-
+ 
 function init_store() {
   try {
     const r =
@@ -89,9 +67,7 @@ const i = {
   jsonp,
   customizer,
   confirm,
-  server,
-  customer,
-  applications,
+  server, 
   init_store,
   delete: confirm,
 };

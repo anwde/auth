@@ -209,6 +209,29 @@ export default class Basic_Component extends React.Component < NavigationBarProp
     return res;
   };
   /**
+   *  列表数据
+   */
+  async __init_lists(url, o = {}, b = {}, state = {}) {
+    const data = { ...webapi.utils.query(), ...o };
+    data.filters = this.state.filters;
+    data.order_field = this.state.order_field;
+    data.order_value = this.state.order_value;
+    data.row_count = this.state.pagination.pageSize;
+    data.offset = this.state.pagination.current;
+    data.q = this.state.q;
+    const res = await webapi.request.get(url, { data });
+    let lists = [];
+    if (res.code === 10000 && res.num_rows > 0) {
+      lists = res.lists;
+    }
+    this.setState({
+      ...state,
+      lists: lists,
+      pagination: { ...this.state.pagination, total: res.num_rows },
+    });
+    this.__breadcrumb(b);
+  }
+  /**
    * init_state 初始化状态 2=init
    * @return obj
    */

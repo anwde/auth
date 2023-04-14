@@ -16,8 +16,8 @@ import moment from "moment";
 import React from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import Basic_Component from "../../components/base/component";
-import webapi from "../../utils/webapi";
+import Basic_Component from "../components/base/component";
+import webapi from "../utils/webapi";
 const BREADCRUMB = {
   title: "菜单",
   lists: [

@@ -90,7 +90,7 @@ class Applications extends Basic_Customer {
         this.state.customer_id,
     },];
     let title = BREADCRUMB.title + "-应用-" + customer.name;
-    this.init_lists("customer/applications/lists", d, {
+    this.init_lists("customer/applications/home/lists", d, {
       buttons,
       title,
     });
@@ -228,6 +228,27 @@ class Applications extends Basic_Customer {
           <Link to={`/customer/competence_user/index/${data.id}`}>
             <Button type="primary" shape="round">
               权限用户
+            </Button>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="pages_3">
+          <Link to={`/customer/applications/spm/page/index?applications_id=${data.id}`}>
+            <Button type="primary" shape="round">
+              SPM-页面
+            </Button>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="pages_3">
+          <Link to={`/customer/applications/spm/module/index?applications_id=${data.id}`}>
+            <Button type="primary" shape="round">
+              SPM-模块
+            </Button>
+          </Link>
+        </Menu.Item>
+        <Menu.Item key="pages_3">
+          <Link to={`/customer/applications/spm/area/index?applications_id=${data.id}`}>
+            <Button type="primary" shape="round">
+              SPM-区域
             </Button>
           </Link>
         </Menu.Item>

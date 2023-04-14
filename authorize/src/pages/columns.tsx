@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import webapi from "../../utils/webapi";
+import webapi from "../utils/webapi";
 import moment from "moment";
 import {
   Form,

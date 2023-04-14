@@ -1,24 +1,34 @@
 import { lazy } from "react";
-const Account = lazy(() => import("../pages/authorize/account"));
-const Columns = lazy(() => import("../pages/authorize/columns"));
-const Menus = lazy(() => import("../pages/authorize/menus"));
-const Competence = lazy(() => import("../pages/authorize/competence"));
-const Permission = lazy(() => import("../pages/authorize/permission"));
-const Customer = lazy(() => import("../pages/authorize/customer/customer"));
+const Account = lazy(() => import("../pages/account"));
+const Columns = lazy(() => import("../pages/columns"));
+const Menus = lazy(() => import("../pages/menus"));
+const Competence = lazy(() => import("../pages/competence"));
+const Permission = lazy(() => import("../pages/permission"));
+const Customer = lazy(() => import("../pages/customer/customer"));
 const Customer_applications = lazy(
-  () => import("../pages/authorize/customer/applications")
+  () => import("../pages/customer/applications")
 );
 const Customer_applications_channel = lazy(
-  () => import("../pages/authorize/customer/applications_channel")
+  () => import("../pages/customer/applications_channel")
 );
 const Customer_applications_extend = lazy(
-  () => import("../pages/authorize/customer/applications_extend")
+  () => import("../pages/customer/applications_extend")
 );
 const Customer_applications_extend_items = lazy(
-  () => import("../pages/authorize/customer/applications_extend_items")
+  () => import("../pages/customer/applications_extend_items")
 );
+const Customer_applications_spm_page = lazy(
+  () => import("../pages/customer/applications/spm/page")
+);
+const Customer_applications_spm_module = lazy(
+  () => import("../pages/customer/applications/spm/module")
+);
+const Customer_applications_spm_area = lazy(
+  () => import("../pages/customer/applications/spm/area")
+);
+
 const Customer_competence_user = lazy(
-  () => import("../pages/authorize/customer/competence_user")
+  () => import("../pages/customer/competence_user")
 );
 
 const Books = lazy(
@@ -79,6 +89,7 @@ let routes: Server.Routes[] = [
       },
     ],
   },
+
   {
     path: "/customer",
     component: Customer,
@@ -87,6 +98,34 @@ let routes: Server.Routes[] = [
         path: "/customer/applications",
         component: Customer_applications,
         children: [
+          
+          {
+            path: "/customer/applications/spm/page/:method/",
+            component: Customer_applications_spm_page,
+            children: [
+              {
+                path: "/customer/applications/spm/page/:method/:id"
+              },
+            ]
+          },
+          {
+            path: "/customer/applications/spm/module/:method/",
+            component: Customer_applications_spm_module,
+            children: [
+              {
+                path: "/customer/applications/spm/module/:method/:id"
+              },
+            ]
+          },
+          {
+            path: "/customer/applications/spm/area/:method/",
+            component: Customer_applications_spm_area,
+            children: [
+              {
+                path: "/customer/applications/spm/area/:method/:id"
+              },
+            ]
+          },
           {
             path: "/customer/applications/:method",
             children: [
@@ -102,7 +141,7 @@ let routes: Server.Routes[] = [
           { path: "/customer/applications_channel/:method/:id" },
         ],
       },
-       
+
       {
         path: "/customer/applications_extend/:method/:applications_id",
         component: Customer_applications_extend,
@@ -127,7 +166,7 @@ let routes: Server.Routes[] = [
         children: [{ path: "/customer/competence_user/:method/:id" }],
       },
       {
-        path: "/customer/:method?/:id?", 
+        path: "/customer/:method?/:id?",
         component: Customer,
       },
     ],
@@ -137,20 +176,20 @@ let routes: Server.Routes[] = [
     component: Books,
     children: [
       {
-        path: "/books/books/:method/:id", 
+        path: "/books/books/:method/:id",
         component: Books,
         children: [
           {
             path: "/books/volume/:method/:book_id/:id?",
             component: Books,
-          }, 
+          },
           {
             path: "/books/chapter/:method/:book_id/:id?",
             component: Books,
           },
         ],
       },
-      
+
     ],
   },
 ];

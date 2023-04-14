@@ -1,6 +1,6 @@
 import React from "react"; 
 import { connect } from "react-redux";
-import Basic_Component from "../../../components/base/component";
+import Basic_Component from "../../components/base/component";
 import { Menu } from "antd";
 import { GridContent } from "@ant-design/pro-layout";
 import styles from "./style.module.less";

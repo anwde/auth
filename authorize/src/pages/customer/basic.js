@@ -1,6 +1,6 @@
 import React from "react";
-import Basic_Component from "../../../components/base/component.js";
-import webapi from "@/utils/webapi";
+import Basic_Component from "../../components/base/component";
+import webapi from "../../utils/webapi";
 export default class Basic_Customer extends Basic_Component {
   customer = {};
   app = {};
@@ -8,9 +8,9 @@ export default class Basic_Customer extends Basic_Component {
   pages_type = {};
   server_state = { channels: {}, pages_type: {} };
   formRef = React.createRef();
-  
+
   /*----------------------0 parent start----------------------*/
-  
+
   /*----------------------0 parent end----------------------*/
 
   /*----------------------1 other start----------------------*/
@@ -32,10 +32,12 @@ export default class Basic_Customer extends Basic_Component {
     let app = this.app ? (this.app[id] ? this.app[id] : {}) : {};
     if (reset || Object.keys(app).length === 0) {
       let res = await webapi.request.get(
-        "customer/applications/get",
-        {data:{
-          id,
-        }}
+        "customer/applications/home/get",
+        {
+          data: {
+            id,
+          }
+        }
       );
       if (res.code === 10000) {
         app = res.data;
@@ -51,8 +53,10 @@ export default class Basic_Customer extends Basic_Component {
         : {}
       : {};
     if (reset || Object.keys(customer).length === 0) {
-      let res = await webapi.request.get("customer/home/get", {data:{
-        id}
+      let res = await webapi.request.get("customer/home/get", {
+        data: {
+          id
+        }
       });
       if (res.code === 10000) {
         customer = res.data;
@@ -61,7 +65,7 @@ export default class Basic_Customer extends Basic_Component {
     this.customer[id] = customer;
     return customer;
   }
-  
+
   get_applications_extend_type = async (reset = false) => {
     let applications_extend_type = this.applications_extend_type || {};
     if (reset || Object.keys(applications_extend_type).length === 0) {
@@ -87,8 +91,8 @@ export default class Basic_Customer extends Basic_Component {
   /*----------------------1 other end----------------------*/
 
   /*----------------------2 init start  ----------------------*/
-  __init_state_before() { 
-    return { 
+  __init_state_before() {
+    return {
       customer_id: this.props.match.params.customer_id || 0,
       extend_id: this.props.match.params.extend_id || 0,
       applications_id: this.props.match.params.applications_id || 0,
@@ -97,7 +101,7 @@ export default class Basic_Customer extends Basic_Component {
   /**
    *  列表数据
    */
-  async init_lists(url, o = {}, b = {},state={}) {
+  async init_lists(url, o = {}, b = {}, state = {}) {
     const data = { ...webapi.utils.query(), ...o };
     data.filters = this.state.filters;
     data.order_field = this.state.order_field;
@@ -105,7 +109,7 @@ export default class Basic_Customer extends Basic_Component {
     data.row_count = this.state.pagination.pageSize;
     data.offset = this.state.pagination.current;
     data.q = this.state.q;
-    const res = await webapi.request.get(url, {data});
+    const res = await webapi.request.get(url, { data });
     let lists = [];
     if (res.code === 10000 && res.num_rows > 0) {
       lists = res.lists;
@@ -126,14 +130,10 @@ export default class Basic_Customer extends Basic_Component {
   /**
    * 集中 删除
    **/
-   handle_do_delete(url, id) {
-    webapi.confirm("customer/" + url, {data:{ id: id }}, (data) => {
-      if (data.status === "success") {
-        webapi.message.success(data.message);
-        this.__method("init");
-      } else {
-        webapi.message.error(data.message);
-      }
+  handle_do_delete(url, id) {
+    this.__handle_delete({
+      url: `${url}/delete`,
+      data: { id },
     });
   }
   /*----------------------3 handle end  ----------------------*/

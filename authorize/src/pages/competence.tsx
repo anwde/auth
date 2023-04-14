@@ -2,7 +2,7 @@ import React from "react";
 import Basic_Authorize from "./basic_authorize";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import webapi from "../../utils/webapi";
+import webapi from "../utils/webapi";
 import { Form, Input, Tree, Space, Button, Drawer, Avatar } from "antd";
 import {
   UserSwitchOutlined,
@@ -12,8 +12,7 @@ import {
 import { FormInstance } from "antd/lib/form";
 import moment from "moment";
 import ProTable from "@ant-design/pro-table";
-import type { ProColumns } from "@ant-design/pro-table";
-import type { Ddata } from '../../types';
+import type { ProColumns } from "@ant-design/pro-table"; 
 const BREADCRUMB = {
   title: "角色管理",
   lists: [
@@ -29,9 +28,9 @@ type Module_data<T = any> = {
 
 type State = Server.State & {
   drawer_visible: boolean;
-  customer: Ddata;
-  applications: Ddata;
-  server_state: Ddata;
+  customer: Server.data;
+  applications: Server.data;
+  server_state: Server.data;
   menus: [];
   columns: [];
   permission: [];
@@ -41,7 +40,7 @@ class Competence extends Basic_Authorize<{}, State> {
   columns: Module_data<[Server.Columns]> = {};
   permission: Module_data<[Server.Permission]> = {};
   menus: Module_data<[Server.Menus]> = {};
-  server_state: Ddata = {};
+  server_state: Server.data = {};
   /**
    * 构造
    */
@@ -572,7 +571,7 @@ class Competence extends Basic_Authorize<{}, State> {
                 to={`?customerappid=${i}`}
                 onClick={() => this.__init_index()}
               >
-                {applications[i] && applications[i]["name"]}
+                {applications[i] && applications[i]["name"]}({i})
               </Link>
             </>
           );

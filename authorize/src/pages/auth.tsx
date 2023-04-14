@@ -1,10 +1,10 @@
 // @ts-nocheck
 import React from "react";
-import Basic_Component from "../../components/base/component";
+import Basic_Component from "../components/base/component";
 import { connect } from "react-redux";
-import webapi from "../../utils/webapi";
-import styles from "../../assets/auth/skin2.module.less";
-import item from "../../components/auth/items";
+import webapi from "../utils/webapi";
+import styles from "../assets/auth/skin2.module.less";
+import item from "../components/auth/items";
 type Style = {
   container: string;
   content: string;

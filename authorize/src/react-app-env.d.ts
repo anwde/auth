@@ -76,13 +76,18 @@ declare module "*.less" {
 
 // @ts-ignore
 /* eslint-disable */
+
+declare namespace  Ddata { 
+  const content: { [key: Number]: {id: Number; name: String  } };
+  export default content;
+}
 declare namespace Server {
   type Breadcrumb = {
     title?: string;
-    lists?: [{'onClick':'','url':'','title':''}];
-    buttons?: [{'onClick':'','url':'','title':''}];
+    lists?: [{onClick?:Function,url?:String,title:String}];
+    buttons?: [{onClick?:Function,url?:String,title:String}];
   };
-
+  type data = { [key: Number]: {id: Number; name: String  } };
   type Routes = {
     path: string;
     component?: React.LazyExoticComponent;
@@ -321,6 +326,7 @@ declare namespace Server {
     };
   };
 }
+
 declare namespace API {
   type CurrentUser = {
     name?: string;

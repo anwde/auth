@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Basic_Authorize from "./basic_authorize";
-import webapi from "../../utils/webapi";
+import webapi from "../utils/webapi";
 import moment from "moment";
 import type { ProColumns } from "@ant-design/pro-table";
 import ProTable from "@ant-design/pro-table";
@@ -38,6 +38,7 @@ type State = {
   children?: [];
   u_action?: string;
   drawer_visible?: boolean;
+  applications: Server.data;
 };
 class Permission extends Basic_Authorize<{}, State> {
   formRef: React.RefObject<FormInstance> = React.createRef<FormInstance>();
@@ -133,13 +134,14 @@ class Permission extends Basic_Authorize<{}, State> {
    * index  列表数据
    */
   async __init_index(d = {}) {
-    let buttons = [
+    const applications = await this.get_applications();
+    const buttons = [
       { title: "添加权限", url: "/permission/add" },
       { title: "树结构", url: "/permission/children" },
       { title: "群组管理", url: "/permission/group" },
     ];
-    let group = await this.get_group();
-    this.setState({ group }, () => {
+    const group = await this.get_group();
+    this.setState({ group,applications }, () => {
       this.__init_lists("permission/lists", d);
     });
     this.__breadcrumb({ buttons });
@@ -383,6 +385,7 @@ class Permission extends Basic_Authorize<{}, State> {
   __render_index(): JSX.Element {
     const state = this.state as unknown as State;
     const group = state.group || {};
+    const applications = state.applications;
     const columns: ProColumns<Server.Permission>[] = [
       {
         title: "ID",
@@ -418,6 +421,27 @@ class Permission extends Basic_Authorize<{}, State> {
         align: "center",
         search: false,
       },
+      {
+        title: "应用",
+        sorter: true,
+        dataIndex: "client_id",
+        align: "center",
+        search: false,
+        render: (_, row) => {
+          let i = row.client_id as number;
+          return (
+            <>
+              <Link
+                to={`?customerappid=${i}`}
+                onClick={() => this.__init_index()}
+              >
+                {applications[i] && applications[i]["name"]}({i})
+              </Link>
+            </>
+          );
+        },
+      },
+
       {
         title: "时间",
         sorter: true,

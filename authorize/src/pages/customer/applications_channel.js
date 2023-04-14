@@ -1,6 +1,6 @@
 import React from "react"; 
 import { connect } from "react-redux";  
-import Basic_Customer from "./basic.js"; 
+import Basic_Customer from "./basic"; 
 class Applications_channel extends Basic_Customer { 
 	constructor(props) {
 		super(props);

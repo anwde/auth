@@ -48,7 +48,7 @@ class Menus extends Basic_Component {
   /**
    * 面包屑导航
    */
-   __breadcrumb(data = {}): void {
+  __breadcrumb(data = {}): void {
     super.__breadcrumb({ ...BREADCRUMB, ...data });
   }
   /*----------------------0 parent end----------------------*/
@@ -93,7 +93,7 @@ class Menus extends Basic_Component {
   /**
    * index  列表数据
    */
-  __init_index(d = {}) { 
+  __init_index(d = {}) {
     this.init_lists("menus/lists", d);
   }
   /**
@@ -112,9 +112,9 @@ class Menus extends Basic_Component {
     if (query['filters']) {
       try {
         d.filters = JSON.parse(query['filters']);
-      } catch (err) {}
+      } catch (err) { }
     }
-    const data = await webapi.request.get(url, {data:d});
+    const data = await webapi.request.get(url, { data: d });
     let lists = [];
     if (data.code === 10000 && data.num_rows > 0) {
       lists = data.lists;
@@ -154,10 +154,10 @@ class Menus extends Basic_Component {
     let buttons = [
       { title: "添加", url: "/menus/group_add" },
       { title: "菜单", url: "/menus" },
-    ]; 
-    let lists=[...BREADCRUMB.lists];
+    ];
+    let lists = [...BREADCRUMB.lists];
     lists.push({ title: "群组", url: "/menus/group" });
-    this.init_lists("menus/group", d, { lists,buttons, title :'群组'});
+    this.init_lists("menus/group", d, { lists, buttons, title: '群组' });
   }
   __init_group_edit() {
     this.__init_group_add_edit("edit");
@@ -207,7 +207,7 @@ class Menus extends Basic_Component {
    * 提交
    **/
   handle_submit = async (data: Server.Menus) => {
-    data.id = this.state.id; 
+    data.id = this.state.id;
     var res = await webapi.request.post("menus/dopost", { data });
     if (res.code === 10000) {
       webapi.message.success(res.message);
@@ -242,7 +242,7 @@ class Menus extends Basic_Component {
   /**
    * 群组提交
    **/
-  handle_group_submit = async (data: Server.Menus_group) => { 
+  handle_group_submit = async (data: Server.Menus_group) => {
     data.id = this.state.id;
     var res = await webapi.request.post("menus/group_dopost", {
       data,
@@ -343,7 +343,7 @@ class Menus extends Basic_Component {
       },
     ];
     return (
-      <ProTable 
+      <ProTable
         rowKey={"id"}
         columns={columns}
         pagination={this.state.pagination}
@@ -357,7 +357,7 @@ class Menus extends Basic_Component {
           </Link>,
         ]}
         rowSelection={{
-          onChange: (_, selectedRows) => {},
+          onChange: (_, selectedRows) => { },
         }}
         search={{
           labelWidth: "auto",
@@ -411,6 +411,7 @@ class Menus extends Basic_Component {
         </Form.Item>
         <Form.Item label="所属">
           <Cascader
+
             options={menus_children}
             fieldNames={{ label: "name", value: "id" }}
             changeOnSelect
@@ -442,14 +443,14 @@ class Menus extends Basic_Component {
         title: "名称",
         sorter: true,
         fixed: "left",
-        dataIndex: "name", 
+        dataIndex: "name",
         align: "center",
       },
       {
         title: "状态",
         sorter: true,
         fixed: "left",
-        dataIndex: "visibility", 
+        dataIndex: "visibility",
         align: "center",
         render: function (field, data) {
           return field === "1" ? "显示" : "隐藏";
@@ -478,7 +479,7 @@ class Menus extends Basic_Component {
           } else {
             return <></>;
           }
-        }, 
+        },
         valueType: "dateRange",
         search: {
           transform: (value) => {

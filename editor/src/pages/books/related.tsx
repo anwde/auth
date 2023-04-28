@@ -1,15 +1,11 @@
 // @ts-nocheck
+import { PlusOutlined } from "@ant-design/icons";
+import { Button, Form, Image, Input, Upload } from "antd";
+import ImgCrop from "antd-img-crop";
 import React from "react";
-import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import webapi from '../../utils/webapi';
-import ImgCrop from "antd-img-crop";
 import Basic_Books from './base/books';
-import { Menu, Dropdown, Button, Pagination, Avatar, Tag, Form, Input, Space, Image, Divider, Upload } from "antd";
-import { PlusOutlined, MessageOutlined, StarOutlined, UploadOutlined, CloseOutlined, UnorderedListOutlined, FontSizeOutlined, OrderedListOutlined, AreaChartOutlined } from "@ant-design/icons";
-import { ProList } from '@ant-design/pro-components';
-import moment from "moment";
-import Books_Components from './components/books';
 const BREADCRUMB = {
   title: "作品管理",
   lists: [
@@ -21,7 +17,7 @@ const BREADCRUMB = {
 
 class Books extends Basic_Books {
   formRef = React.createRef();
-
+  base_url: string = 'books/related/';
   /**
    * 构造
    */
@@ -65,6 +61,9 @@ class Books extends Basic_Books {
   handle_submit_build_data = (data, values) => {
     data.append("book_id", values.book_id || 0)
     return data;
+  }
+  _handle_delete_build_url = () => {
+    return `books/related/delete`;
   }
   /*----------------------3 handle end  ----------------------*/
 
@@ -195,51 +194,38 @@ class Books extends Basic_Books {
   }
   __render_index() {
     const state = this.state;
-    let c = "";
-
-    if (this.state.u_action == "edit" || this.state.u_action == "add") {
-      c = this.__render_index_add_edit(this.state.u_action);
-    }
+    console.log('data=>', state);
     return (
-      <>
-        <Books_Components
-          onSearch={this.__handle_search}
-          onChange={(o) => {
-            this.__handle_search_change(o);
-          }}
-          params={state.params}
-          dataSource={state.lists}
-          pagination={state.pagination}
-          // request_url={'books/related/lists'}
-          request_handle={async (params = {}, sorts, filter) => {
-            return await this.__handle_tablepro_request(params, sorts, filter, 'books/related/lists');
-          }}
-          metas={{
-            title: {
-              click: (item) => this.handle_edit(item.id, item),
-            },
-            subTitle: {},
-            description: {
 
-            },
-            actions: {
+      this.__render_components_lists({
+        generate_cover_mage: true,
 
-            },
-            avatar: {
+        pagination: state.pagination,
+        request_url: 'books/related/lists',
+        metas: {
+          title: {
+            click: (item) => this.handle_edit(item.id, item),
+          },
+          subTitle: {},
+          description: {
 
-            },
-            content: {
+          },
+          actions: {
 
-            },
-            extra: {}
+          },
+          avatar: {
 
-          }
-          }
-        />
+          },
+          content: {
 
-        {c}
-        {this.__render_drawer('')}
-      </>
+          },
+          extra: {}
+
+        }
+      })
+
+
+
     );
   }
 

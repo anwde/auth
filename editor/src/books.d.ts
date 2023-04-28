@@ -24,3 +24,17 @@ export declare type Chapters = {
     content?:string,
     content_arr?:array
 }; 
+export declare type Categorys = {
+    id: number,
+    state_delete: number,
+    customer_id: number,
+    client_id: number, 
+    name: number, 
+    update_time: number,
+    create_time: number,
+    
+    intro: number,
+    parent_id:number,
+    idx: number,
+}; 
+

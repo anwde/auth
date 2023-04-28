@@ -47,7 +47,7 @@ const loopMenuItem = (
 const handle_apps_change = (application_id, customer_id) => {
   // console.log(application_id, customer_id);
   webapi.utils.setcookie("customerid", customer_id);
-  webapi.utils.setcookie("customerappid", application_id); 
+  webapi.utils.setcookie("customerappid", application_id);
 };
 const Layout = (props) => {
   const { columns, breadcrumb, customer, applications, apps } = useSelector(
@@ -262,11 +262,11 @@ const Layout = (props) => {
       children?: Option[];
       isLeaf?: boolean;
       loading?: boolean;
-    } 
+    }
     const onChange = (value) => {
-     if(value.length==2){
-      handle_apps_change(value[1],value[0].replace('group_',''));
-     }
+      if (value.length == 2) {
+        handle_apps_change(value[1], value[0].replace('group_', ''));
+      }
     };
 
     const { token } = theme.useToken();
@@ -283,7 +283,7 @@ const Layout = (props) => {
           }}
           type="vertical"
         />
-        <Cascader 
+        <Cascader
           onChange={onChange}
           options={apps}
           fieldNames={{ label: 'name', value: 'id', children: 'children' }}
@@ -375,7 +375,7 @@ const Layout = (props) => {
           {...defaultProps}
           location={{
             pathname,
-          }} 
+          }}
           menu={{
             collapsedShowGroupTitle: true,
             type: 'sub', request: async () => loopMenuItem(columns || [])
@@ -439,17 +439,19 @@ const Layout = (props) => {
           )}
           breadcrumbProps={{
             itemRender: (route) => {
-              return route.path?<Link to={route.path}>{route.breadcrumbName}</Link>:route.breadcrumbName;
+              // console.log(route);
+              return route.path ? <Link to={route.path}>{route.breadcrumbName}</Link> : route.breadcrumbName;
             },
           }}
-          breadcrumbRender={(routers = []) =>{
-            // console.log(breadcrumb.lists);
-            return breadcrumb.lists.map((val, key) => {
+          breadcrumbRender={(routers = []) => {
+            const r = breadcrumb.lists.map((val, key) => {
               return {
                 path: val.url,
                 breadcrumbName: val.title,
               };
-            })
+            });
+            // console.log(r);
+            return r;
           }}
           {...settings}
         >

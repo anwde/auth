@@ -68,7 +68,13 @@ export default class Basic_Component extends React.Component<NavigationBarProps>
    * 面包屑导航
    */
   __breadcrumb(data = {}) {
-    // console.log(data);
+    const lists = [
+      {
+        title: "首页",
+        url: "/",
+      },
+    ];
+    data.lists=[...lists,...data.lists];
     store.dispatch({
       type: "BREADCRUMB",
       data: data
@@ -103,7 +109,7 @@ export default class Basic_Component extends React.Component<NavigationBarProps>
     }
     //保护
     if (method in this) {
-      return this[method]();
+      return this[method](true);
     } else {
       return "";
     }
@@ -152,14 +158,14 @@ export default class Basic_Component extends React.Component<NavigationBarProps>
           const base64Data = imageUrl.result;
           options.success
             ? options.success(options, file, base64Data)
-            : this.setState({ 
-                data: {
-                  ...this.state.data,
-                  [options.file_field ? options.file_field : "file"]: file,
-                  [options.image_field ? options.image_field : "image"]:
-                    base64Data,
-                },
-              });
+            : this.setState({
+              data: {
+                ...this.state.data,
+                [options.file_field ? options.file_field : "file"]: file,
+                [options.image_field ? options.image_field : "image"]:
+                  base64Data,
+              },
+            });
         });
         return false;
       },
@@ -446,7 +452,7 @@ export default class Basic_Component extends React.Component<NavigationBarProps>
    * @return mixed
    */
   __handle_tablepro_request = async (params = {}, sorts, filter, url, data = {}) => {
-    const state=this.state;
+    const state = this.state;
     let filters = webapi.utils.deepclone(params);
     const s = Object.keys(sorts);
     let field = "";
@@ -466,13 +472,14 @@ export default class Basic_Component extends React.Component<NavigationBarProps>
       order
     }
     );
+    console.log(params);
     // data.filters = state.filters;
     data.q = state.q;
     data.order_field = state.order_field;
     data.order_value = state.order_value;
     data.row_count = state.pagination.pageSize;
     data.offset = state.pagination.current;
-    data.state_delete = 1; 
+    data.state_delete = 1;
     // data.t=123;
     const res = await webapi.request.get(url, { data });
     if (res.code === 10000) {

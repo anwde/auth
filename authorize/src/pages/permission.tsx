@@ -18,7 +18,7 @@ import {
   Space,
 } from "antd";
 import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
-import { FormInstance } from "antd/lib/form"; 
+import { FormInstance } from "antd/lib/form";
 const BREADCRUMB = {
   title: "权限管理",
   lists: [
@@ -141,7 +141,7 @@ class Permission extends Basic_Authorize<{}, State> {
       { title: "群组管理", url: "/permission/group" },
     ];
     const group = await this.get_group();
-    this.setState({ group,applications }, () => {
+    this.setState({ group, applications }, () => {
       this.__init_lists("permission/lists", d);
     });
     this.__breadcrumb({ buttons });
@@ -155,11 +155,11 @@ class Permission extends Basic_Authorize<{}, State> {
       { title: "添加群组", url: "/permission/group_add" },
       { title: "权限管理", url: "/permission" },
     ];
-    let lists=BREADCRUMB.lists;
+    let lists = BREADCRUMB.lists;
     lists.push({ title: "群组", url: "/permission/group" });
     let title = "群组";
     this.__init_lists("permission/group", d);
-    this.__breadcrumb({ buttons, title,lists });
+    this.__breadcrumb({ buttons, title, lists });
   }
 
   /*----------------------2 init end  ----------------------*/
@@ -503,9 +503,9 @@ class Permission extends Basic_Authorize<{}, State> {
           labelWidth: "auto",
         }}
         request={async (params = {}, sorts, filter) => {
-          return this.__handle_tablepro_request(params,sorts,filter); 
+          return this.__handle_tablepro_request(params, sorts, filter);
         }}
-       
+
       />
     );
   }
@@ -653,7 +653,7 @@ class Permission extends Basic_Authorize<{}, State> {
           labelWidth: 120,
         }}
         rowSelection={{
-          onChange: (_, selectedRows) => {},
+          onChange: (_, selectedRows) => { },
         }}
       />
     );

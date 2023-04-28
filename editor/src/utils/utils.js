@@ -95,7 +95,6 @@ const decrypt = (word, key, iv) => {
     mode: CryptoJS.mode.CBC,
     padding: CryptoJS.pad.Pkcs7,
   });
-
   return d.toString(CryptoJS.enc.Utf8);
 };
 /**
@@ -195,6 +194,18 @@ function diff(obj1, obj2) {
   }
   return true;
 }
+ 
+function isValidUrl(str) {
+  const urlPattern = new RegExp("^(https?:\\/\\/)?"+ // protocol
+    "((([a-zA-Z\\d]([a-zA-Z\\d-]{0,61}[a-zA-Z\\d])?)\\.)+[a-zA-Z]{2,}|"+ // domain name
+    "((\\d{1,3}\\.){3}\\d{1,3}))"+ // OR ip (v4) address
+    "(\\:\\d{2,5})?"+ // port
+    "(\\/([\\w\\d%_.~+-]*)*)*"+ // path
+    "(\\?[\\w\\d%_.,~&=]*)?"+ // query string
+    "(\\#[-\\w\\d_]*)?$", "i"); // fragment locator
+
+  return urlPattern.test(str);
+}
 
 const i = {
   diff,
@@ -212,5 +223,6 @@ const i = {
   decrypt,
   close_window,
   deepclone,
+  isValidUrl,
 };
 export default i;

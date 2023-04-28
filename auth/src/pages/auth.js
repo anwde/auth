@@ -8,7 +8,6 @@ import { Drawer } from "antd";
 import React from "react";
 import { connect } from "react-redux";
 const original_captcha_url = "/auth/captcha?u_action=graph&reset=1&height=30";
-
 let customizer_styles = {};
 // console.log("data=>", styles);
 class Auth extends Basic_Component {
@@ -16,11 +15,8 @@ class Auth extends Basic_Component {
    * 构造
    */
   constructor(props) {
-    super(props);
-    this.state = this.__init_state();
-    // customizer_styles = require("@/assets/auth/skin2-" +
-    //   window.appid +
-    //   ".less");
+    super(props); 
+    this.state = this.__init_state(); 
     customizer_styles = require("@/assets/styles/skin2-313.less");
     // console.log(customizer_styles, styles);
   }
@@ -72,6 +68,9 @@ class Auth extends Basic_Component {
    * @return obj
    */
   render() {
+    console.log(this.props);
+    const server=this.props.server||{};
+    const apps=server.apps||{};
     return (
       <>
         <Drawer
@@ -106,7 +105,7 @@ class Auth extends Basic_Component {
             </div>
           </div>
           <footer>
-            <span>版权所有：华语数媒（北京）科技有限公司 </span>
+            <span>版权所有：{apps.name} </span>
           </footer>
         </div>
       </>
@@ -158,6 +157,7 @@ class Auth extends Basic_Component {
   }
   check = async (res = {}) => {
     const data = await webapi.request.get("auth/check", {
+      loading:false,
       data: {
         u_action: this.state.method,
       },

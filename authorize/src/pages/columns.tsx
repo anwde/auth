@@ -256,6 +256,7 @@ class Columns extends Basic_Authorize<{}, State> {
     const state = this.state;
     data.id = state.id;
     data.image = data.image;
+    // data.browser_test_no_encrypt = 'qw12@!';
     var res = await webapi.request.post("columns/dopost", { data });
     if (res.code === 10000) {
       this.get_children(true);
@@ -539,7 +540,7 @@ class Columns extends Basic_Authorize<{}, State> {
           labelWidth: 120,
         }}
         rowSelection={{
-          onChange: (_, selectedRows) => {},
+          onChange: (_, selectedRows) => { },
         }}
       />
     );

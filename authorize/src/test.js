@@ -17,9 +17,9 @@ window.wu = "authorize.com";
 // window.wu = "authorize.youyan.cc";
 // d['browser_test_no_encrypt']='qw12@!';
 //壁纸权限
-// window.appid = "356";
-// window.cs = "ti33blirbs2eozxrnwhif4s6frlkyzml";
-// window.wu = "authorize.hxdrive.net"; 
+window.appid = "356";
+window.cs = "ti33blirbs2eozxrnwhif4s6frlkyzml";
+window.wu = "authorize.hxdrive.net"; 
 
 // webapi.store.dispatch({ type: "STORE", data: w });
 webapi.store.dispatch({ type: "INITIALIZE",data:{},reducers:'SETTINGS' });

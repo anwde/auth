@@ -48,7 +48,7 @@ type State = Server.State & {
 };
 class Chapters extends Base_Chapters {
   formRef = React.createRef();
-  base_url='books/';
+  base_url = 'books/';
   constructor(props) {
     super(props);
   }
@@ -80,7 +80,7 @@ class Chapters extends Base_Chapters {
   /*----------------------1 other end  ----------------------*/
 
   /*----------------------2 init start----------------------*/
- 
+
   init_lists = async (
     // 第一个参数 params 查询表单和 params 参数的结合
     // 第一个参数中一定会有 pageSize 和  current ，这两个参数是 antd 的规范
@@ -111,12 +111,12 @@ class Chapters extends Base_Chapters {
     };
   }
   //更新章节内容素材-子类需实现-构建提交数据
-  __handle_material_build_data=(data)=>{
-    data.chapter_id=this.state.data.id;
-    data.book_id=this.state.book_id;
+  __handle_materials_build_data = (data) => {
+    data.chapter_id = this.state.data.id;
+    data.book_id = this.state.book_id;
     return data;
   }
-  
+
   /*----------------------3 handle end  ----------------------*/
 
   /*----------------------4 render start----------------------*/
@@ -124,7 +124,7 @@ class Chapters extends Base_Chapters {
   __render_index() {
     return this.__render_index_proxy('books');
   }
-  
+
   //自定义批量操作工具栏右侧选项区域
   render_table_alert_option = (selectedRowKeys, selectedRows, onCleanSelected) => {
     return (
@@ -190,7 +190,7 @@ class Chapters extends Base_Chapters {
           onClick={(e) => {
             e.preventDefault();
             this.handle_checkbox_ids(selectedRowKeys, () => {
-              this.handle_published_drawer_open({}, "batch");
+              this.__handle_chapter_published_drawer_open({}, "batch");
             });
           }}
         >
@@ -206,16 +206,16 @@ class Chapters extends Base_Chapters {
     );
   }
   //章节-构建提交数据
-  handle_chapter_submit_build_data=(data)=>{
+  handle_chapter_submit_build_data = (data) => {
     data.book_id = this.state.book_id;
     return data;
   };
   //分卷-构建提交数据
-  handle_volume_dopost_build_data=(data)=>{
+  handle_volume_dopost_build_data = (data) => {
     data.book_id = this.state.book_id;
     return data;
   };
-  
+
   /*----------------------4 render end  ----------------------*/
 }
 export default connect((store) => ({ ...store }))(Chapters);

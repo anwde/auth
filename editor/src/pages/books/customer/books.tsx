@@ -7,7 +7,6 @@ import Basic_Books from '../base/books';
 import { Menu, Dropdown, Button, Pagination, Avatar, Tag, Form, Input, Space, Image, Divider } from "antd";
 import { LikeOutlined, MessageOutlined, StarOutlined, UploadOutlined, CloseOutlined, UnorderedListOutlined, FontSizeOutlined, OrderedListOutlined, AreaChartOutlined } from "@ant-design/icons";
 import { ProList } from '@ant-design/pro-components';
-import Books_Components from '../components/books';
 import moment from "moment";
 
 const BREADCRUMB = {
@@ -171,15 +170,12 @@ class Books extends Basic_Books {
     );
     return (
       <>
-        <Books_Components
-          handleGenerateCoverImage={this.__handleGenerateCoverImage}
-          page='customer'
-          request_handle={async (params = {}, sorts, filter) => {
-            return await this.__handle_tablepro_request(params, sorts, filter, 'books/customer/home/lists');
-          }}
-          dataSource={state.lists}
-          pagination={state.pagination}
-          metas={{
+
+        {this.__render_components_lists({
+          generate_cover_mage: true,
+          pagination: state.pagination,
+          request_url: 'books/customer/home/lists',
+          metas: {
             title: {
               click: (item) => this.handle_edit(item.id, item),
             },
@@ -199,9 +195,7 @@ class Books extends Basic_Books {
             extra: {}
 
           }
-          }
-        />
-
+        })}
 
         {c}
         {this.__render_drawer(children)}

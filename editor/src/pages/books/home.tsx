@@ -1,20 +1,11 @@
 // @ts-nocheck
+import {
+  Form
+} from 'antd';
 import React from 'react';
-import Basic_Books from './base/books';
-import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import webapi from '../../utils/webapi';
-import { ProList } from '@ant-design/pro-components';
-import {
-  Drawer,
-  DatePicker,
-  Avatar, Button, Space, Tag, List, Radio, Dropdown, Modal, Form, Upload, Input, Cascader, Select, Checkbox, Row, Image
-} from 'antd';
-import ImgCrop from "antd-img-crop";
-import moment from 'moment';
-import { LikeOutlined, MessageOutlined, StarOutlined, UploadOutlined, CloseOutlined } from '@ant-design/icons';
-import type { MenuProps } from 'antd';
-import Books_Components from './components/books';
+import Basic_Books from './base/books';
 type State = Server.State & {
   drawer_visible: boolean;
   group: Server.data;
@@ -118,77 +109,17 @@ class Books extends Basic_Books<{}, State> {
       filters,
     });
   };
+  //更新章节内容素材-子类需实现-构建提交数据
+  __handle_materials_build_data = (data) => {
+    data.chapter_id = this.state.data.chapter_id;
+    data.book_id = this.state.data.book_id;
+    return data;
+  }
   /*----------------------3 handle end  ----------------------*/
 
   /*----------------------4 render start  ----------------------*/
   __render_index() {
     const state = this.state as unknown as State;
-    const group = state.group || {};
-    const category_dict = state.category_dict || {};
-    const dutys = this.dutys || [];
-    const filters = state.filters || {};
-    let children = (
-      <>
-        <Form.Item label="责编" name="duty">
-          <div
-            style={{
-              lineHeight: "32px",
-              transition: "all 0.3s",
-              userSelect: "none",
-            }}
-          >
-            {dutys.map((val) => {
-              return this.__render_drawer_tag_children(
-                filters,
-                "duty_user_id",
-                val.user_id,
-                val.nickname
-              );
-            })}
-          </div>
-        </Form.Item>
-        <Form.Item label="排序" name="">
-          <div
-            style={{
-              lineHeight: "32px",
-              transition: "all 0.3s",
-              userSelect: "none",
-            }}
-          >
-            {this.__render_drawer_tag_children(
-              filters,
-              "order",
-              "words",
-              "字数"
-            )}
-            {this.__render_drawer_tag_children(
-              filters,
-              "order",
-              "last_chapter_update_time",
-              "更新时间"
-            )}
-            {this.__render_drawer_tag_children(
-              filters,
-              "order",
-              "chapter_10_read_num",
-              "10章完读"
-            )}
-            {this.__render_drawer_tag_children(
-              filters,
-              "order",
-              "chapter_50_read_num",
-              "50章完读"
-            )}
-            {this.__render_drawer_tag_children(
-              filters,
-              "order",
-              "chapter_100_read_num",
-              "100章完读"
-            )}
-          </div>
-        </Form.Item>
-      </>
-    );
     let c = "";
     if (this.state.u_action == "sign") {
       c = this.__render_index_sign();
@@ -196,21 +127,18 @@ class Books extends Basic_Books<{}, State> {
     if (this.state.u_action == "duty") {
       c = this.__render_index_duty();
     }
-    if (this.state.u_action == "edit" || this.state.u_action == "add") {
-      c = this.__render_index_add_edit(this.state.u_action);
-    }
+
     return (
       <>
 
-        <Books_Components
-          page='books'
-          handleGenerateCoverImage={this.__handleGenerateCoverImage}
-          dataSource={state.lists}
-          pagination={state.pagination}
-          request_handle={async (params = {}, sorts, filter) => {
-            return await this.__handle_tablepro_request(params, sorts, filter, 'books/home/lists');
-          }}
-          metas={{
+
+        {this.__render_components_lists({
+          page: 'books',
+          generate_cover_mage: true,
+
+          pagination: state.pagination,
+          request_url: 'books/home/lists',
+          metas: {
             title: {
               click: (item) => this.handle_edit(item.id, item),
             },
@@ -230,10 +158,9 @@ class Books extends Basic_Books<{}, State> {
             extra: {}
 
           }
-          }
-        />
+        })}
         {c}
-        {this.__render_drawer(children)}
+
       </>
     );
   }

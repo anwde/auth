@@ -6,6 +6,9 @@ const defaultState = {
   menus_active: { expand: {}, selected: 0 },
   customer: {},
   applications: {},
+  apps: {
+    name:'',
+  },
   breadcrumb: { lists: [], buttons: [] },
   loading: false,
   code: 0,
@@ -21,6 +24,7 @@ const reducer = (state = defaultState, action) => {
     newState.columns = action.data.columns;
     newState.menus = action.data.menus;
     newState.code = action.data.code * 1;
+    newState.apps = action.data.apps;
     newState.version = action.data.version + "";
   }
   if (action.type === "STORE") {

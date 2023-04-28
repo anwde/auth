@@ -3,8 +3,8 @@ import React from "react";
 import Basic from "./basic";
 import { Link } from "react-router-dom";
 import ImgCrop from "antd-img-crop";
-import { UploadOutlined } from "@ant-design/icons";
 import webapi from '../../../utils/webapi';
+import { ProList } from '@ant-design/pro-components';
 import {
     Form,
     Input,
@@ -22,12 +22,10 @@ import {
     Skeleton,
     Avatar,
     DatePicker, Dropdown,
-    Image,
-    List
+    Image, Divider, Space
 } from "antd";
 import moment from "moment";
-import Books_Components from '../components/books';
-import { EditOutlined, FileWordOutlined, CloseOutlined, PlusOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { EditOutlined, FileWordOutlined, UnorderedListOutlined, DeleteOutlined, BookOutlined, HolderOutlined, ReadOutlined } from "@ant-design/icons";
 export default class Basic_Books extends Basic {
     formRef = React.createRef();
     constructor(props) {
@@ -43,7 +41,7 @@ export default class Basic_Books extends Basic {
     /*----------------------1 other end----------------------*/
 
     /*----------------------2 init start  ----------------------*/
-    __init_index = async () => {
+    __init_index = async (r = false) => {
         const state = this.state as unknown as State;
         const server_state = await this.get_server_state();
         const category_dict = await this.get_category_dict();
@@ -59,13 +57,15 @@ export default class Basic_Books extends Basic {
                 }
             }
         ];
-        // console.log(1111);
         this.__breadcrumb({ buttons, lists });
         this.setState(
             {
+                // params: { ...state.params, random: Math.random() },
                 server_state,
                 category_dict,
             });
+        // this.setState({ params: { ...state.params, book_id: state.data.id } });
+        console.log('random=>', Math.random());
     }
     /*----------------------2 init end  ----------------------*/
 
@@ -120,7 +120,8 @@ export default class Basic_Books extends Basic {
         if (res.code === 10000) {
             webapi.message.success(res.message);
             this.handle_add_edit_modal_visible(!state.add_edit_modal_visible);
-            this.__init_index(true);
+            this.__init_index();
+
         } else {
             webapi.message.error(res.message);
         }
@@ -199,6 +200,14 @@ export default class Basic_Books extends Basic {
         const res = await webapi.request.get("books/home/lists", { data: d });
         const modal_books_lists = res.code === 10000 && res.num_rows > 0 ? res.lists : [];
         this.setState({ modal_books: true, modal_books_lists });
+    }
+    //删除
+    _handle_delete = (id) => {
+        this.__handle_delete({ url: this._handle_delete_build_url(), data: { id } });
+    }
+    //删除-构建-url
+    _handle_delete_build_url = () => {
+        return `${this.base_url}home/delete`;
     }
     /*----------------------3 handle end  ----------------------*/
 
@@ -380,13 +389,13 @@ export default class Basic_Books extends Basic {
                     onCancel={() => this.handle_modal_books_open(false)}
                     bodyStyle={{ padding: 0 }}
                 >
-                    <Books_Components
+                    {/* <Books_Components
                         pagination={state.pagination}
                         // request_url={'books/home/lists'}
                         request_handle={async (params = {}, sorts, filter) => {
                             return await this.__handle_tablepro_request(params, sorts, filter, 'books/home/lists');
                         }}
-                    />
+                    /> */}
                 </Modal>
                 <Modal
                     width="61.8vw"
@@ -731,6 +740,374 @@ export default class Basic_Books extends Basic {
             </Tag.CheckableTag>
         );
     };
+    //列表操作
+    __render_lists_actions(item = {}, page = 'books') {
+        const state = this.state || {};
+        const url = page === 'books' ? '/books/' : '/books/customer/';
+        const items: MenuProps['items'] = [
+            {
+                key: '1',
+                label: <Link to={`${url}chapters?book_id=${item.id}`}>
+                    <Button type="primary" shape="round" icon={<BookOutlined />} size={'default'}>
+                        章节列表
+                    </Button>
+                </Link>,
+            },
+
+
+            {
+                key: '2',
+                label: <Link to={`${url}volumes?book_id=${item.id}`}>
+                    <Button type="primary" shape="round" icon={<HolderOutlined />} size={'default'}>
+                        分卷列表
+                    </Button>
+                </Link>,
+            },
+            {
+                key: '3',
+                label:
+                    <Button type="primary" shape="round" icon={<DeleteOutlined />} size={'default'}
+                        onClick={() => this._handle_delete(item.id)}>
+                        删除
+                    </Button>
+                ,
+            },
+            {
+                key: '4',
+                label:
+                    <Button type="primary" shape="round" icon={<ReadOutlined />} size={'default'}
+                        onClick={() => { this.__handle_chapter_content({ book_id: item.id }) }}>
+                        查看章节内容
+                    </Button>
+                ,
+            },
+
+
+
+        ];
+        if (page === 'books') {
+            items.push({
+                key: 'related',
+                label: <Link to={`/books/related?book_id=${item.id}`}>
+                    <Button type="primary" shape="round">
+                        关联列表
+                    </Button>
+                </Link>,
+            });
+            items.push({
+                key: 'state_published_1-2',
+                label:
+                    <Button
+                        type="primary"
+                        shape="round"
+                        onClick={() => {
+                            this.handle_published(item.id, item.state_published == 1 ? 2 : 1);
+                        }}
+                    >
+                        设置为
+                        {item.state_published == 1 ? "先发后审" : "先审后发"}
+                    </Button>
+                ,
+            });
+            if (item.state_sale == "7") {
+                items.push({
+                    key: 'handle_sale_11',
+                    label:
+                        <Button type="primary" shape="round" onClick={() => {
+                            this.handle_sale(item.id, 11);
+                        }}>
+                            作品下线
+                        </Button>
+                });
+            }
+            if (!webapi.utils.in_array(item.state_sale, [
+                "1",
+                "2",
+                "3",
+                "6",
+            ])) {
+                items.push({
+                    key: 'revert',
+                    label: <Button type="primary" shape="round" onClick={() => this.handle_revert(item.id)}>
+                        退稿
+                    </Button>,
+                });
+            }
+            if (item.last_chapter.idx !== item.chapters) {
+                items.push({
+                    key: 'reset_chapters_idx',
+                    label: <Button type="primary" shape="round" onClick={() => this.handle_reset_chapters_idx(item.id)}>
+                        初始化章节序号
+                    </Button>,
+                });
+            }
+            if (webapi.utils.in_array(item.state_sale, [
+                "1",
+                "2",
+                "4",
+                "5",
+                "6",
+                "8",
+                "9",
+                "10",
+                "11",
+            ])) (
+                items.push({
+                    key: '4',
+                    label:
+                        <Button type="primary" shape="round" onClick={() => {
+                            this.handle_sale(item.id, 7);
+                        }}>
+                            作品上线
+                        </Button>
+                    ,
+                })
+            );
+        }
+        if (item.end_of_serial == 1) {
+            items.push({
+                key: 'chapter-add',
+                label: <Link to={`/books/chapter/add?book_id=${item.id}`}>
+                    <Button type="primary" shape="round">
+                        添加章节
+                    </Button>
+                </Link>,
+            });
+            items.push({
+                key: 'volume-add',
+                label: <Link to={`/books/volume/add?book_id=${item.id}`}>
+                    <Button type="primary" shape="round">
+                        添加分卷
+                    </Button>
+                </Link>,
+            });
+        }
+        if (state.handleGenerateCoverImage && !webapi.utils.in_array(item.state_sale, [
+            "4",
+            "5",
+            "8",
+            "9",
+            "10",
+        ])) {
+            items.push({
+                key: 'generate_cover_image',
+                label: <Button type="primary" shape="round" onClick={() => state.handleGenerateCoverImage(item.id)}>
+                    生成封面图片
+                </Button>,
+            });
+        }
+        return items;
+    }
+    __render_components_lists(params = {}) {
+        const state = this.state;
+        const category_dict = state.category_dict || {};
+        const server_state = state.server_state || {};
+        const state_sale = server_state.book ? server_state.book.sale : {};
+        const server = state.server || {};
+        const customer = state.customer || {};
+        const applications = server.applications || {};
+        // console.log(state);
+        return <>
+
+            <ProList<any>
+                // manualRequest={true}
+                params={{ ...state.params, q: state.q }}
+                showActions='hover'
+                itemLayout="vertical"
+                rowKey="id"
+                headerTitle={params.headerTitle ?? <>
+                    作品管理(<span style={{ fontSize: '11px', fontWeight: 'none' }}>共{state.pagination.total}部</span>)</>}
+                toolBarRender={params.toolBarRender ?? (() => {
+                    return [
+                        <Input.Search
+                            placeholder="搜索..."
+                            allowClear
+                            size="middle"
+                            enterButton
+                            onSearch={this.__handle_search}
+                            onChange={(o) => {
+                                this.__handle_search_change(o);
+                            }}
+                        />,
+                        <Button type="primary" shape="round"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                this.handle_filter_drawer_show();
+                            }}
+                        >
+                            筛选
+                        </Button>
+                    ];
+                })}
+                // rowSelection={{
+                //     onChange: (_, selectedRows) => { },
+                // }}
+                request={params.request_url ? async (p = {}, sorts, filter) => {
+                    return await this.__handle_tablepro_request(p, sorts, filter, params.request_url);
+                } : params.request_handle}
+                dataSource={params.dataSource}
+                pagination={params.pagination}
+                metas={params.metas_render ?? {
+                    title: {
+                        render: (_, item) => {
+                            return <>
+                                <a
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        params.metas.title.click && params.metas.title.click(item);
+                                    }}
+                                >{item.name}</a>
+                            </>
+                        }
+                    },
+                    description: {
+                        render: (_, item) => {
+                            return (
+                                <Space>
+                                    <Link
+                                        to={`?end_of_serial=${item.end_of_serial}`}
+                                        className={
+                                            'tag fill-' +
+                                            (item.end_of_serial == 1 ? 'stress' : 'primary')
+                                        }
+                                        onClick={() => this.__handle_init_index()}
+                                    >
+                                        <Tag>{item.end_of_serial == 1 ? '连载' : '完结'}</Tag>
+                                    </Link>
+                                    <Link
+                                        to={`?state_sale=${item.state_sale}`}
+                                        onClick={() => this.__handle_init_index()}
+                                    >
+                                        <Tag
+                                            color={state_sale[item.state_sale] && state_sale[item.state_sale].color}
+                                        >{state_sale[item.state_sale] && state_sale[item.state_sale].name}</Tag>
+                                    </Link>
+
+                                    {item.category_id > 0 ? (
+                                        <Link
+                                            to={'?category_id=' + item.category_id}
+                                            className="tag"
+                                            onClick={() => this.__handle_init_index()}
+                                        >
+                                            <Tag>
+                                                {category_dict[item.category_id]
+                                                    ? category_dict[item.category_id].name
+                                                    : ''}
+                                            </Tag>
+                                        </Link>
+                                    ) : (
+                                        ''
+                                    )}
+                                    <span>
+                                        作品ID:{item.id}
+                                    </span>
+                                    {item.customer_book_id ? (<>
+                                        <span>
+                                            商户作品ID:{item.customer_book_id}
+                                        </span>
+                                    </>) : ''}
+                                    {item.client_id || item.customer_id ? (<>
+                                        <span>
+                                            来源:{customer[item.customer_id] && customer[item.customer_id].name}{applications[item.client_id] && applications[item.client_id].name}
+                                        </span>
+                                    </>) : ''}
+                                    <span>
+                                        创建时间:
+                                        {item.create_time > 0 ? moment((item.create_time) * 1000).format(
+                                            "YYYY-MM-DD HH:mm:ss"
+                                        ) : ''}</span>
+
+                                </Space>
+                            );
+                        },
+                    },
+                    content: {
+                        render: (_, item) => {
+                            return <>
+                                <div>
+                                    {item.intro}
+                                </div>
+                            </>;
+                        },
+
+                    },
+                    extra: {
+                        render: (_, item) => {
+                            return <>
+                                <Image
+                                    width={170.8152}
+                                    height={200}
+                                    src={item.image || ''}
+                                    preview={false}
+                                    style={{ borderRadius: '0.6rem' }}
+                                    fallback="data:image/png;base64,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"
+                                />
+
+                            </>;
+                        },
+                    },
+
+                    actions: {
+                        render: (_, item) => {
+                            return [
+                                <div key='all'>
+                                    <span>
+                                        字数:{' '}{item.words > 1000
+                                            ? (item.words / 1000).toFixed(1) + "K"
+                                            : item.words}
+                                    </span>
+                                    <Divider type="vertical" />
+                                    <span>
+                                        章节: {item.chapters}
+                                    </span>
+                                    <Divider type="vertical" />
+                                    <span>
+                                        点击:{' '}
+                                        {item.all_hits > 10000
+                                            ? (item.all_hits / 10000).toFixed(2) + "万"
+                                            : item.all_hits || 0}
+                                    </span>
+                                    <Divider type="vertical" />
+                                    <span> 收藏:{' '}{item.all_store || 0}</span>
+                                    <Divider type="vertical" />
+                                    <span> 评论:{' '}{item.all_comment || 0}</span>
+                                    <Divider type="vertical" />
+                                    <span> 点赞:{' '}{item.all_support || 0}</span>
+                                    <Divider type="vertical" />
+                                    <span> 操作:{' '}</span>
+                                </div>,
+
+                                <Dropdown menu={{ items: this.__render_lists_actions(item, state.page) }} key='dropdown'>
+                                    <Button
+                                        type="primary"
+                                        shape="circle"
+                                        size={'small'}
+                                        icon={<UnorderedListOutlined />}
+                                    />
+                                </Dropdown>
+                            ];
+                        },
+                    },
+                }}
+
+            />
+        </>
+    }
+    /**
+   * render 渲染  4=render
+   * @return obj
+   */
+    render(): JSX.Element {
+        const state = this.state;
+        // console.log('data=>', state);
+        let c = "";
+
+        if (this.state.u_action == "edit" || this.state.u_action == "add") {
+            c = this.__render_index_add_edit(this.state.u_action);
+        }
+        return <>{this.__method("render")} {this.__render_drawer('')}{c}
+            {this.__render_chapter_action_drawer_modal({ prev_id: true, next_id: true })}</>;
+    }
     /*----------------------4 render end  ----------------------*/
 
 }

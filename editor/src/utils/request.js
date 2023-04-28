@@ -122,6 +122,7 @@ const http_request = async function(config) {
                 console.log(config.url + " request=>", res);
                 console.log("env=>", process.env);
             }
+            //版本有更新 检测到有新版本发布，需要您刷新页面哦～   刷新
             if (config.cache && josn.code === 10000) {
                 cache.set(
                     hash,

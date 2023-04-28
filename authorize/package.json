@@ -5,8 +5,9 @@
   "homepage": "",
   "description": "authorize to use code",
   "proxy2": "http://admin.system.com/",
-  "proxy": "https://authorize.mianfeigushi.com/",
-  "proxy1": "https://authorize1.youyan.cc/",
+  "proxy1": "https://authorize.mianfeigushi.com/",
+  "proxy3": "https://authorize1.youyan.cc/",
+  "proxy": "https://program-video-authorize.youyan.cc/",
   "dependencies": {
     "@ant-design/pro-components": "^2.3.57",
     "@ant-design/pro-layout": "^7.6.1",

@@ -61,7 +61,7 @@ export default class Basic_Books extends Basic_Component {
     }
     async get_category_dict(reset = false) {
         if (reset || Object.keys(this.category_dict || {}).length === 0) {
-            const res = await webapi.request.get(`${this.base_url}category/dict`, { cache: true, loading: false });
+            const res = await webapi.request.get(`${this.base_url}categorys/dict`, { cache: true, loading: false });
             this.category_dict = res.code === 10000 ? res.data : {};
         }
         return this.category_dict;
@@ -69,7 +69,7 @@ export default class Basic_Books extends Basic_Component {
 
     async get_category(reset = false) {
         if (reset || (this.category || []).length === 0) {
-            const res = await webapi.request.get(`${this.base_url}category/tree`, { cache: true, loading: false });
+            const res = await webapi.request.get(`${this.base_url}categorys/tree`, { cache: true, loading: false, data: {} });
             this.category = res.code === 10000 ? res.lists : [];
         }
         return this.category;
@@ -85,7 +85,7 @@ export default class Basic_Books extends Basic_Component {
         if (reset || Object.keys(this.book[book_id] || {}).length === 0) {
             const res = await webapi.request.get(`${this.base_url}home/get`, {
                 data: {
-                    id: book_id
+                    id: book_id,
                 }
                 , loading: false
             });
@@ -227,6 +227,16 @@ export default class Basic_Books extends Basic_Component {
             webapi.message.error(res.message);
         }
     };
+    //显示大纲
+    __handle_book_outline = async () => {
+        const res = await webapi.request.get(`${this.base_url}home/outline`, { data: { id } });
+        if (res.code === 10000) {
+            this.setState({ data: res.data, book_outline_modal_visible: true });
+        } else {
+            webapi.message.error(res.message);
+        }
+    };
+
     //章节内容开关
     __handle_chapter_content_modal_visible = (v) => {
         this.setState({ chapter_content_modal_visible: v });

@@ -315,6 +315,8 @@ declare namespace Server {
     method: string;
     order_value: any;
     filters: any;
+    u_action?: string,
+    params?:any,
     pagination: {
       showSizeChanger: boolean;
       hideOnSinglePage: boolean;

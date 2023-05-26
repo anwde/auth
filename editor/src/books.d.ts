@@ -37,4 +37,26 @@ export declare type Categorys = {
     parent_id:number,
     idx: number,
 }; 
+export declare type Tags = {
+    id: number,
+    state_delete: number,
+    customer_id: number,
+    client_id: number, 
+    name: number, 
+    update_time: number,
+    create_time: number,
+    
+    intro: number, 
+    quote: number,
+}; 
+export declare type Authors = {
+    id: number,
+    state_delete: number,  
+    update_time: number,
+    create_time: number,
+
+    pseudonym: number, 
+    books: number, 
+    words: number,
+}; 
 

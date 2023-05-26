@@ -12,7 +12,7 @@ import {
 import { FormInstance } from "antd/lib/form";
 import moment from "moment";
 import ProTable from "@ant-design/pro-table";
-import type { ProColumns } from "@ant-design/pro-table"; 
+import type { ProColumns } from "@ant-design/pro-table";
 const BREADCRUMB = {
   title: "角色管理",
   lists: [
@@ -295,7 +295,7 @@ class Competence extends Basic_Authorize<{}, State> {
   async handle_finish_user(values: Server.Competence_user) {
     let data: Server.Competence_user = { id: 0 };
     data.competence_id = this.state.id;
-    data.user_id = values.user_id; 
+    data.user_id = values.user_id;
     let res = await webapi.request.post("competence/user_add", {
       data,
     });
@@ -330,6 +330,7 @@ class Competence extends Basic_Authorize<{}, State> {
     data.menus = state.menus;
     data.columns = state.columns;
     data.permission = state.permission;
+    // data.browser_test_no_encrypt = 'qw12@!';
     let res = await webapi.request.post("competence/dopost", {
       data,
     });

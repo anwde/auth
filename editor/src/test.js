@@ -6,9 +6,9 @@ window.appid = "2";
 window.cs = "1gaxf5h2omuws2jbdu6a3vqh2t6pvpr3";
 window.wu = "authorize.youyan.cc";
 
-// window.appid = "4";
-// window.cs = "lakhdlmiefhrv1wa1eaw1oykcldkounr";
-// window.wu = "manager.com";
+window.appid = "4";
+window.cs = "lakhdlmiefhrv1wa1eaw1oykcldkounr";
+window.wu = "manager.com";
 
 // d['browser_test_no_encrypt']='qw12@!';
 //壁纸权限

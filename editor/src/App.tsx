@@ -45,9 +45,9 @@ class App extends React.Component<{}, State> {
   --------------------------------------------------------------------------------*/
 
   get_is_auth() {
-    return window.location.pathname.indexOf("/auth") === -1
-      ? false
-      : true;
+    return window.location.pathname.indexOf("/auth") === 0
+      ? true
+      : false;
   }
   /*--------------------------------------------------------------------------------
     *  server 

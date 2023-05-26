@@ -25,7 +25,7 @@ import {
     Image, Divider, Space
 } from "antd";
 import moment from "moment";
-import { EditOutlined, FileWordOutlined, UnorderedListOutlined, DeleteOutlined, BookOutlined, HolderOutlined, ReadOutlined } from "@ant-design/icons";
+import { EditOutlined, FileWordOutlined, UnorderedListOutlined, DeleteOutlined, BookOutlined, HolderOutlined, ReadOutlined, GroupOutlined } from "@ant-design/icons";
 export default class Basic_Books extends Basic {
     formRef = React.createRef();
     constructor(props) {
@@ -72,11 +72,22 @@ export default class Basic_Books extends Basic {
     /*----------------------3 handle start  ----------------------*/
     //作品-添加
     handle_add = () => {
-        this.handle_add_edit("edit", 0, "添加作品");
+        this.handle_add_edit("add", "创建作品", {});
     };
     //作品-修改
     handle_edit = async (id) => {
+        if (this.props.server.loading) {
+            return false;
+        }
+        this.props.dispatch({
+            type: "LOADING",
+            state: true,
+        });
         const data = await this.get_book(id, true);
+        this.props.dispatch({
+            type: "LOADING",
+            state: false,
+        });
         data.id = id;
         this.handle_add_edit("edit", "修改作品", data);
     };
@@ -114,7 +125,8 @@ export default class Basic_Books extends Basic {
         data.append("category_id", state.category_id || "");
         data.append("intro", values.intro || "");
         data.append("author_id", values.author_id || "");
-        data.append("tag", values.tag || "");
+        data.append("tags", values.tag || "");
+        data.append("t", "123");
         state.data.file && data.append("image", state.data.file);
         const res = await webapi.request.post(this.handle_submit_build_url(`${this.base_url}home/dopost`), { data: this.handle_submit_build_data(data, values), file: true });;
         if (res.code === 10000) {
@@ -184,6 +196,48 @@ export default class Basic_Books extends Basic {
             }, 3000);
         }
     }
+    //大纲
+    __handle_outline = async (type, id) => {
+        const state = this.state;
+        const res = await webapi.request.post(`${this.base_url}outline/get`, { data: { related_id: id, related_type: type } });;
+        if (res.code === 10000) {
+            this.setState({ modal_outline_value: res.data.content, modal_outline_id: id, modal_outline_type: type })
+            this.modal_outline_visible(true);
+        } else {
+            webapi.message.error(res.message);
+        }
+
+
+    }
+    //大纲-Modal-开关
+    modal_outline_visible = (v: boolean) => {
+        this.setState({ modal_outline_visible: v })
+    }
+    //大纲-Modal-输入框
+    handle_outline_chang = (v) => {
+        this.setState({ modal_outline_value: v.target.value })
+    }
+    //大纲-Modal-提交
+    handle_outline_dopost = async () => {
+        const state = this.state;
+        if (!state.modal_outline_value) {
+            return webapi.message.error('请输入描述语');
+        }
+        if (!state.modal_outline_id || state.modal_outline_id === 0) {
+            return webapi.message.error('信息不完整,请重新操作.');
+        }
+        if (!state.modal_outline_type || state.modal_outline_type === 0) {
+            return webapi.message.error('信息不完整,请重新操作.');
+        }
+        const res = await webapi.request.post(`${this.base_url}outline/dopost`, { data: { content: state.modal_outline_value, related_id: state.modal_outline_id, related_type: state.modal_outline_type } });;
+        if (res.code === 10000) {
+            webapi.message.success(res.message);
+            this.setState({ modal_outline_value: null, modal_outline_id: 0, modal_outline_type: 0 })
+            this.modal_outline_visible(false);
+        } else {
+            webapi.message.error(res.message);
+        }
+    }
     //选择书鼠标获得焦点
     handleSelectBooksMouseEnter = (k) => {
         this.setState({ [k]: true });
@@ -209,6 +263,7 @@ export default class Basic_Books extends Basic {
     _handle_delete_build_url = () => {
         return `${this.base_url}home/delete`;
     }
+
     /*----------------------3 handle end  ----------------------*/
 
     /*----------------------4 render start  ----------------------*/
@@ -421,6 +476,32 @@ export default class Basic_Books extends Basic {
                         onChange={this.handleGenerateCoverImagChange}
                         placeholder="描述"
                         value={state.modal_generate_cover_image_prompt || ''}
+                    />
+                </Modal >
+                <Modal
+                    width="61.8vw"
+                    height="61.8vh"
+                    style={{ top: "20px", bottom: '20px' }}
+                    keyboard={false}
+                    maskClosable={false}
+                    open={state.modal_outline_visible}
+                    onOk={this.handle_outline_dopost}
+                    onCancel={() => this.modal_outline_visible(false)}
+                    centered={true}
+                    title='请输入-大纲-主要内容'
+                    bodyStyle={{
+                        height: "calc(61.8vh - 150px)",
+                        overflowX: "hidden",
+                        overflowY: "scroll",
+                    }}
+                >
+                    <Input.TextArea
+                        showCount
+                        maxLength={500}
+                        style={{ height: 'calc(61.8vh - 200px)', resize: 'none' }}
+                        onChange={this.handle_outline_chang}
+                        placeholder="描述"
+                        value={state.modal_outline_value || ''}
                     />
                 </Modal >
                 <Drawer
@@ -781,6 +862,16 @@ export default class Basic_Books extends Basic {
                     </Button>
                 ,
             },
+            {
+                key: '5',
+                label:
+                    <Button type="primary" shape="round" icon={<GroupOutlined />} size={'default'}
+                        onClick={() => { this.__handle_outline(1, item.id) }}>
+                        大纲
+                    </Button>
+                ,
+            },
+
 
 
 
@@ -900,13 +991,14 @@ export default class Basic_Books extends Basic {
     }
     __render_components_lists(params = {}) {
         const state = this.state;
+        const props = this.props;
         const category_dict = state.category_dict || {};
         const server_state = state.server_state || {};
         const state_sale = server_state.book ? server_state.book.sale : {};
-        const server = state.server || {};
-        const customer = state.customer || {};
+        const server = props.server || {};
+        const customer = server.customer || {};
         const applications = server.applications || {};
-        // console.log(state);
+        // console.log(server);
         return <>
 
             <ProList<any>

@@ -131,11 +131,9 @@ class Books extends Basic_Books<{}, State> {
     return (
       <>
 
-
         {this.__render_components_lists({
           page: 'books',
           generate_cover_mage: true,
-
           pagination: state.pagination,
           request_url: 'books/home/lists',
           metas: {
@@ -144,16 +142,12 @@ class Books extends Basic_Books<{}, State> {
             },
             subTitle: {},
             description: {
-
             },
             actions: {
-
             },
             avatar: {
-
             },
             content: {
-
             },
             extra: {}
 

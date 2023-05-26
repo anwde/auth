@@ -53,6 +53,7 @@ async function customer(reset = false) {
 
 async function applications(reset = false) {
   let res = await request.get("server/applications", {
+    data:{},
     reset: reset,
     cache: true,
   });

@@ -1,7 +1,7 @@
-import React from "react"; 
+import React from "react";
 import { connect } from "react-redux";
 import Basic_Component from "../../components/base/component";
-import { Menu } from "antd";
+import { Menu, theme } from "antd";
 import { GridContent } from "@ant-design/pro-layout";
 import styles from "./style.module.less";
 import { Link } from "react-router-dom";
@@ -12,7 +12,9 @@ import Notification from "./notification";
 
 type State = Server.State & {
   mode: "inline" | "horizontal";
-} ;
+};
+const token = theme;
+console.log(token);
 class Account extends Basic_Component {
   menuMap: Record<string, React.ReactNode> = {
     index: "基本设置",
@@ -29,13 +31,13 @@ class Account extends Basic_Component {
       mode: "inline",
     };
   }
-  __init_index=()=>{
-    console.log('state=>',this.state);
+  __init_index = () => {
+    console.log('state=>', this.state);
   }
-  __init_security=()=>{
-    console.log('state=>',this.state);
+  __init_security = () => {
+    console.log('state=>', this.state);
   }
-  
+
   __render_index() {
     return (
       <>
@@ -50,31 +52,31 @@ class Account extends Basic_Component {
       </>
     );
   }
-  __render_binding(){
+  __render_binding() {
     return (
-        <>
-          <Binding />
-        </>
-      );
+      <>
+        <Binding />
+      </>
+    );
   }
-  __render_notification(){
+  __render_notification() {
     return (
-        <>
-          <Notification />
-        </>
-      );
+      <>
+        <Notification />
+      </>
+    );
   }
   render() {
     const state = this.state as unknown as State;
     const menus = this.menuMap;
-   
+
     return (
       <GridContent>
         <div className={styles.main}>
           <div className={styles.leftMenu}>
             <Menu mode={state.mode} selectedKeys={[state.method]}>
               {Object.keys(menus).map((item) => (
-                <Link to={`/authorize/account/${item}`} key={item}>
+                <Link to={`/account/${item}`} key={item}>
                   <Menu.Item eventKey={item}>{menus[item]}</Menu.Item>
                 </Link>
               ))}

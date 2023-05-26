@@ -1,9 +1,10 @@
 import React from "react";
 import webapi from "../../utils/webapi";
 import store from "../../redux/store";
-import type {
-  TablePaginationConfig
-} from "antd";
+// import type {
+//   TablePaginationConfig
+// } from "antd";
+// import type { PaginationConfig } from 'antd/es/pagination';
 interface NavigationBarProps {
   server: {
     loading: boolean
@@ -309,7 +310,7 @@ export default class Basic_Component extends React.Component<NavigationBarProps>
       columns_children: []
     };
   }
-  __init_page_data(data = {}): TablePaginationConfig {
+  __init_page_data(data = {}) {
     // console.log('1111=>',TablePaginationConfig)
     return {
       showSizeChanger: false,

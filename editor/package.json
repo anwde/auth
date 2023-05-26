@@ -4,8 +4,8 @@
   "private": true,
   "homepage": "",
   "description": "cms-system-admin to use code",
-  "proxy": "http://admin.system.com/",
-  "proxy2": "https://mgr.mianfeigushi.com/",
+  "proxy2": "http://admin.system.com/",
+  "proxy": "https://mgr.mianfeigushi.com/",
   "dependencies": {
     "@ant-design/pro-components": "^2.3.57",
     "@ant-design/pro-layout": "^7.6.1",

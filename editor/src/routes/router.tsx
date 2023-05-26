@@ -47,7 +47,12 @@ const Area_Location = lazy(
 const Books_Categorys = lazy(
   () => import("../pages/books/categorys")
 );
-
+const Books_Tags = lazy(
+  () => import("../pages/books/tags")
+);
+const Books_Authors = lazy(
+  () => import("../pages/books/authors")
+);
 let routes: Server.Routes[] = [
   {
     path: "/books",
@@ -68,6 +73,15 @@ let routes: Server.Routes[] = [
         path: "/books/categorys/:method?/:id?",
         component: Books_Categorys,
       },
+      {
+        path: "/books/tags/:method?/:id?",
+        component: Books_Tags,
+      },
+      {
+        path: "/books/authors/:method?/:id?",
+        component: Books_Authors,
+      },
+
       {
         path: "/books/related/:method?/:id?",
         component: Related,

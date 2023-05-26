@@ -27,27 +27,27 @@ import {
 import { PlusOutlined, DeleteOutlined, EditOutlined, SettingFilled, ArrowRightOutlined, ArrowLeftOutlined, UnorderedListOutlined } from "@ant-design/icons";
 
 import moment from "moment";
-import type { Categorys as TypesCategorys } from '../../books';
+import type { Tags as TypesTags } from '../../books';
 import type { ProColumns } from "@ant-design/pro-table";
-import { stat } from "fs";
 const BREADCRUMB = {
-    title: "分类管理",
+    title: "标签管理",
     lists: [
-        { title: "分类管理", url: "/books/categorys" },
+        { title: "标签管理", url: "/books/tags" },
 
     ],
-    buttons: [{ title: "添加分类", url: "/books/categorys/add" }, { title: "树结构", url: "/books/categorys/children" }],
+    buttons: [{ title: "添加", url: "/books/tags/add" }],
 };
 type State = Server.State & {
-    data?: TypesCategorys;
-    categorys?: [TypesCategorys];
+    data?: TypesTags;
+
     children?: [],
     drawer_visible?: boolean;
 };
-class Categorys extends Basic_Component {
+class Tags extends Basic_Component {
     formRef: React.RefObject<FormInstance> = React.createRef<FormInstance>();
     categorys = [];
     children = [];
+    tag = {};
     constructor(props: any) {
         super(props);
     }
@@ -59,35 +59,14 @@ class Categorys extends Basic_Component {
         super.__breadcrumb({ ...BREADCRUMB, ...data });
     }
     /*----------------------0 parent end----------------------*/
+    async get_tag(reset = false) {
+        if (reset || Object.keys(this.tag || {}).length === 0) {
+            const res = await webapi.request.get(`books/tags/dict`, { cache: true, loading: false });
+            this.tag = res.code === 10000 ? res.data : {};
+        }
+        return this.tag;
+    }
 
-    /**
-       * 获取树
-       * @return obj
-       */
-    async get_categorys_tree(reset = false) {
-        if (reset || this.categorys.length === 0) {
-            const res = await webapi.request.get("books/categorys/tree");
-            this.categorys = res.code === 10000 ? res.lists : [];
-        }
-        return this.categorys;
-    }
-    /**
-      * 获取树
-      * @return obj
-      */
-    async get_children(reset = false) {
-        if (reset || this.children.length === 0) {
-            const data = await webapi.request.get("books/categorys/children", {
-                data: {
-                    select: "CONCAT(name) as title,id as key,parent_id,group_id",
-                    fieldnames: { name: "title", id: "key", parent_id: "parent_id" },
-                    fieldnames_group: { name: "title", id: "key" },
-                },
-            });
-            this.children = data.code === 10000 ? data.lists : [];
-        }
-        return this.children;
-    }
     /*----------------------1 other start----------------------*/
 
     /*----------------------1 other end----------------------*/
@@ -113,7 +92,7 @@ class Categorys extends Basic_Component {
         d.row_count = state.pagination.pageSize;
         d.offset = state.pagination.current;
         d.state_delete = 1;
-        const res = await webapi.request.get("books/categorys/lists", { data: d });
+        const res = await webapi.request.get("books/tags/lists", { data: d });
         if (res.code === 10000) {
             this.setState(
                 {
@@ -131,11 +110,11 @@ class Categorys extends Basic_Component {
         }
 
     }
-    async __init_add_edit(action: string) {
+    async __init_add_edit(u_action: string) {
         let b = { title: "" };
         let data = { name: "" };
-        if (action === "edit" && this.state.id) {
-            const res = await webapi.request.get("books/categorys/get", {
+        if (u_action === "edit" && this.state.id) {
+            const res = await webapi.request.get("books/tags/get", {
                 data: {
                     id: this.state.id,
                 },
@@ -147,27 +126,8 @@ class Categorys extends Basic_Component {
         } else {
             b.title = `${BREADCRUMB.title}-添加`;
         }
-        const categorys = await this.get_categorys_tree();
-        this.setState({ data: data, categorys });
+        this.setState({ data: data });
         this.formRef.current && this.formRef.current.setFieldsValue({ ...data });
-        this.__breadcrumb(b);
-    }
-    async __init_children() {
-        const children = await this.get_children(true);
-        const b = {
-            buttons: [
-                {
-                    title: "添加分类",
-                    url: "#!",
-                    onClick: () => {
-                        this.handle_add();
-                    },
-                },
-            ],
-        };
-        this.setState({
-            children,
-        });
         this.__breadcrumb(b);
     }
     /*----------------------2 init end  ----------------------*/
@@ -182,27 +142,15 @@ class Categorys extends Basic_Component {
     /**
     * 提交
     **/
-    handle_submit = async (data: TypesCategorys) => {
+    handle_submit = async (data: TypesTags) => {
         data.id = this.state.id;
-        data.parent_id = this.state.data.parent_id;
-        const res = await webapi.request.post("books/categorys/dopost", { data });
+        const res = await webapi.request.post("books/tags/dopost", { data });
         if (res.code === 10000) {
             webapi.message.success(res.message);
-            this.props.history.replace("/books/categorys");
-            this.get_categorys_tree(true);
+            this.props.history.replace("/books/tags");
+            this.get_tag(true);
         } else {
             webapi.message.error(res.message);
-        }
-    };
-    handle_parent_id = (value: (string | number)[]): void => {
-        let parent_id: string | number = 0;
-        if (value.length > 0) {
-            parent_id = value[value.length - 1];
-        }
-        if (parent_id !== this.state.id * 1) {
-            this.setState({
-                data: { ...this.state.data, parent_id: parent_id },
-            });
         }
     };
     /**
@@ -210,8 +158,17 @@ class Categorys extends Basic_Component {
        **/
     handle_do_delete(url: string, id: number) {
         this.__handle_delete({
-            url: `books/categorys/${url}`,
+            url: `books/tags/${url}`,
             data: { id },
+            success: (data) => {
+                if (data.code === 10000) {
+                    webapi.message.success(data.message);
+                    this.__method("init");
+                    this.get_tag(true);
+                } else {
+                    webapi.message.error(data.message);
+                }
+            },
         });
     }
     /**
@@ -220,20 +177,7 @@ class Categorys extends Basic_Component {
     handle_delete(id: number) {
         this.handle_do_delete("delete", id);
     }
-    handle_drag_end = (info: any) => {
-        console.log(info);
-    };
 
-    handle_drop = async (info: any) => {
-        const dropKey = info.node.key;
-        const dragKey = info.dragNode.key;
-        const res = await webapi.request.post("books/categorys/dopost", {
-            data: { id: dragKey, parent_id: dropKey },
-        });
-        if (res.code === 10000) {
-            this.__init_children();
-        }
-    };
     handle_drawer_close = () => {
         this.formRef.current && this.formRef.current.resetFields();
         this.setState({
@@ -241,37 +185,18 @@ class Categorys extends Basic_Component {
         });
     };
 
-    handle_drawer_submit = () => {
-        this.formRef.current &&
-            this.formRef.current
-                .validateFields()
-                .then((data) => {
-                    this.handle_finish_dopost(data);
-                })
-                .catch((info) => {
-                    //console.log('Validate Failed:', info);
-                });
-    };
-    handle_finish_dopost = async (data: TypesCategorys) => {
-        const res = await webapi.request.post("books/categorys/dopost", {
-            data,
-        });
-        if (res.code === 10000) {
-            this.setState({ parent_id: 0 });
-            this.get_children(true);
-            this.__init_children();
-            this.handle_drawer_close();
-            webapi.message.success(res.message);
-        } else {
-            webapi.message.error(res.message);
-        }
-    };
+
     /*----------------------3 handle end  ----------------------*/
 
     /*----------------------4 render start  ----------------------*/
     __render_index() {
-        const state = this.state;
-        const columns: ProColumns<TypesCategorys>[] = [
+        const props = this.props;
+        const server = (props.server || {}) as Server.Server;
+        const customer = server.customer || {};
+        const applications = server.applications || {};
+        const state = this.state as unknown as State;
+        // console.log(applications);
+        const columns: ProColumns<TypesTags>[] = [
             {
                 title: "名称",
                 sorter: true,
@@ -280,11 +205,31 @@ class Categorys extends Basic_Component {
                 align: "center",
             },
             {
-                title: "序号",
+                title: "引用",
                 sorter: true,
                 fixed: "left",
-                dataIndex: "idx",
+                dataIndex: "quote",
                 align: "center",
+            },
+            {
+                title: "商户",
+                sorter: true,
+                fixed: "left",
+                dataIndex: "customer_id",
+                align: "center",
+                render: (_, row) => {
+                    return customer[row.customer_id] && customer[row.customer_id].name;
+                }
+            },
+            {
+                title: "应用",
+                sorter: true,
+                fixed: "left",
+                dataIndex: "client_id",
+                align: "center",
+                render: (_, row) => {
+                    return applications[row.client_id] && applications[row.client_id].name;
+                }
             },
             {
                 title: "操作",
@@ -304,7 +249,7 @@ class Categorys extends Basic_Component {
                                 }}
                             />
 
-                            <Link to={`/books/categorys/edit/${row.id}`}>
+                            <Link to={`/books/tags/edit/${row.id}`}>
                                 <Button type="primary" shape="circle" icon={<EditOutlined />} />
                             </Link>
                         </Space>
@@ -314,8 +259,8 @@ class Categorys extends Basic_Component {
         ];
         return <>
             <ProTable
-
-                headerTitle='分类列表'
+                params={{ ...state.params, q: state.q }}
+                headerTitle='标签列表'
                 columns={columns}
                 rowKey="id"
                 search={false}
@@ -338,8 +283,10 @@ class Categorys extends Basic_Component {
                 onChange={this.__handle_table_change}
             >
             </ProTable>
+
         </>
     }
+
     /**
    * 添加-编辑 子类重写
    * @return obj
@@ -363,7 +310,7 @@ class Categorys extends Basic_Component {
                         >
                             {this.props.server.loading ? "正在提交" : "立即提交"}
                         </Button>
-                        <Link className="button" to={"/books/categorys"}>
+                        <Link className="button" to={"/books/tags"}>
                             返回
                         </Link>
                     </Space>
@@ -371,85 +318,27 @@ class Categorys extends Basic_Component {
             </Form>
         );
     }
-    __render_children() {
-        const state = this.state as unknown as State;
-        const children = state.children || [];
-        return (<>
-            <Tree
-                className="draggable-tree"
-                showLine={{ showLeafIcon: false }}
-                draggable
-                blockNode
-                onDragEnd={this.handle_drag_end}
-                onDrop={this.handle_drop}
-                treeData={children}
-            />
-            <Drawer
-                title={(state.u_action === "add" ? "添加" : "编辑") + "权限"}
-                width={500}
-                forceRender={true}
-                onClose={this.handle_drawer_close}
-                open={state.drawer_visible}
-                bodyStyle={{ paddingBottom: 80 }}
-                footer={
-                    <div
-                        style={{
-                            textAlign: "right",
-                        }}
-                    >
-                        <Button
-                            shape="round"
-                            style={{ marginRight: 8 }}
-                            onClick={this.handle_drawer_close}
-                        >
-                            取消
-                        </Button>
-                        <Button
-                            shape="round"
-                            loading={this.props.server.loading}
-                            type="primary"
-                            onClick={this.handle_drawer_submit}
-                        >
-                            提交
-                        </Button>
-                    </div>
-                }
-            >
-                <Form ref={this.formRef} onFinish={this.handle_submit}>
-                    {this.__render_add_edit_children(state.u_action)}
-                </Form>
-            </Drawer>
-        </>);
-    }
+
     /**
    * 添加、编辑
    * @return obj
    */
     __render_add_edit_children(u_action: string) {
         const state = this.state as unknown as State;
-        const categorys = state.categorys || [];
         const data = state.data;
         return (
             <>
                 <Form.Item name="name" label="名称">
                     <Input />
                 </Form.Item>
-                <Form.Item name="idx" label="序号">
+                <Form.Item name="intro" label="介绍">
                     <Input />
                 </Form.Item>
 
-                <Form.Item label="所属">
-                    <Cascader
-                        value={[data.parent_id]}
-                        options={categorys}
-                        fieldNames={{ label: "name", value: "id" }}
-                        changeOnSelect
-                        onChange={this.handle_parent_id}
-                    />
-                </Form.Item>
+
             </>
         );
     }
     /*----------------------4 render end  ----------------------*/
 }
-export default connect((store) => ({ ...store }))(Categorys);
+export default connect((store) => ({ ...store }))(Tags);

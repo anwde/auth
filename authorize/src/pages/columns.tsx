@@ -106,7 +106,7 @@ class Columns extends Basic_Authorize<{}, State> {
       Object.keys(module.templates).length === 0 ||
       Object.keys(module.types).length === 0
     ) {
-      const data = await webapi.request.get("columns/module");
+      const data = await webapi.request.get("columns/module", { data: {} });
       if (data.code === 10000) {
         module.model = data.data.model;
         module.templates = data.data.templates;
@@ -123,7 +123,7 @@ class Columns extends Basic_Authorize<{}, State> {
   async get_children(reset = false) {
     let columns_children = this.columns_children || [];
     if (reset || columns_children.length === 0) {
-      var data = await webapi.request.get("columns/children", {
+      const data = await webapi.request.get("columns/children", {
         data: {
           fieldnames: { name: "title", id: "key", parent_id: "parent_id" },
         },
@@ -146,7 +146,7 @@ class Columns extends Basic_Authorize<{}, State> {
     if (reset || Object.keys(data).length === 0) {
       const res = await webapi.request.get("columns/get", {
         data: {
-          id
+          id,
         },
       });
       if (res.code === 10000) {

@@ -37,12 +37,12 @@ const Books = lazy(
 
 let routes: Server.Routes[] = [
   {
-    path: "/authorize/account",
+    path: "/account",
     component: Account,
     children: [
       {
-        path: "/authorize/account/:method",
-        children: [{ path: "/authorize/account/:method/:id" }],
+        path: "/account/:method",
+        children: [{ path: "/account/:method/:id" }],
       },
     ],
   },
@@ -98,7 +98,7 @@ let routes: Server.Routes[] = [
         path: "/customer/applications",
         component: Customer_applications,
         children: [
-          
+
           {
             path: "/customer/applications/spm/page/:method/",
             component: Customer_applications_spm_page,

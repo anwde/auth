@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {
   CaretDownFilled,
   DoubleRightOutlined,
@@ -44,14 +45,15 @@ const loopMenuItem = (
   });
 };
 const handle_apps_change = (application_id, customer_id) => {
-  console.log(application_id, customer_id);
+  // console.log(application_id, customer_id);
   webapi.utils.setcookie("customerid", customer_id);
-  webapi.utils.setcookie("customerappid", application_id); 
+  webapi.utils.setcookie("customerappid", application_id);
 };
 const Layout = (props) => {
   const { columns, breadcrumb, customer, applications, apps } = useSelector(
     (state: Server.Props) => state.server
   );
+  // console.log(breadcrumb);
   const Irouters = (Server_routes: Server.Routes[]) => {
     let r = [];
     const rs = (routes: Server.Routes[], pprop: Server.Routes = { path: "" }) => {
@@ -246,7 +248,7 @@ const Layout = (props) => {
             }
           `}
           >
-            <span> 企业级资产中心</span>
+            <span>中心</span>
             <CaretDownFilled />
           </div>
         </Popover>
@@ -260,11 +262,11 @@ const Layout = (props) => {
       children?: Option[];
       isLeaf?: boolean;
       loading?: boolean;
-    } 
+    }
     const onChange = (value) => {
-     if(value.length==2){
-      handle_apps_change(value[1],value[0].replace('group_',''));
-     }
+      if (value.length == 2) {
+        handle_apps_change(value[1], value[0].replace('group_', ''));
+      }
     };
 
     const { token } = theme.useToken();
@@ -281,7 +283,7 @@ const Layout = (props) => {
           }}
           type="vertical"
         />
-        <Cascader 
+        <Cascader
           onChange={onChange}
           options={apps}
           fieldNames={{ label: 'name', value: 'id', children: 'children' }}
@@ -338,7 +340,7 @@ const Layout = (props) => {
     siderMenuType: 'sub',
   });
   const [pathname, setPathname] = useState('/list/sub-page/sub-sub-page1');
-  console.log(settings);
+  // console.log(settings);
   return (
     <div
       id="test-pro-layout"
@@ -348,6 +350,7 @@ const Layout = (props) => {
     >
       <ProConfigProvider hashed={false}>
         <ProLayout
+          title='有盐编辑后台'
           prefixCls="my-prefix"
           bgLayoutImgList={[
             {
@@ -373,9 +376,6 @@ const Layout = (props) => {
           location={{
             pathname,
           }}
-          // menu={{
-          //   collapsedShowGroupTitle: true,
-          // }}
           menu={{
             collapsedShowGroupTitle: true,
             type: 'sub', request: async () => loopMenuItem(columns || [])
@@ -439,15 +439,20 @@ const Layout = (props) => {
           )}
           breadcrumbProps={{
             itemRender: (route) => {
-              return <Link to={route.path}>{route.breadcrumbName}</Link>;
+              // console.log(route);
+              return route.path ? <Link to={route.path}>{route.breadcrumbName}</Link> : route.breadcrumbName;
             },
           }}
-          breadcrumbRender={(routers = []) =>breadcrumb.lists.map((val, key) => {
-            return {
-              path: val.url,
-              breadcrumbName: val.title,
-            };
-          })}
+          breadcrumbRender={(routers = []) => {
+            const r = breadcrumb.lists.map((val, key) => {
+              return {
+                path: val.url,
+                breadcrumbName: val.title,
+              };
+            });
+            // console.log(r);
+            return r;
+          }}
           {...settings}
         >
           <PageContainer

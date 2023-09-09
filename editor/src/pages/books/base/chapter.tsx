@@ -393,7 +393,7 @@ export default class Base_Chapters<P = {}, S = {}, SS = any> extends Basic {
     }
     data.id = state.id;
     data.content = state.editorState.toText();
-    const res = await webapi.request.post(`${this.base_url}chapters/dopost?t=123`, { data: this.handle_chapter_submit_build_data(data) });
+    const res = await webapi.request.post(`${this.base_url}chapters/dopost`, { data: this.handle_chapter_submit_build_data(data) });
     if (res.code === 10000) {
       webapi.message.success(res.message);
       this.props.history.replace(`/${this.base_url}chapters/index?book_id=${state.book_id}`);

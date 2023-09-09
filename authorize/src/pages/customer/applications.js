@@ -101,7 +101,7 @@ class Applications extends Basic_Customer {
     data.customer_id = this.state.customer_id;
     if (action === "edit" && this.state.id) {
       const res = await webapi.request.get(
-        "customer/applications/get", {
+        "customer/applications/home/get", {
         data: {
           id: this.state.id,
         },
@@ -187,12 +187,13 @@ class Applications extends Basic_Customer {
     );
   };
   handle_submit = async (data = {}) => {
-    let url = "customer/applications/dopost";
+    let url = "customer/applications/home/dopost";
     let history =
       "/customer/applications?customer_id=" + this.state.customer_id;
     data.extend = this.state.data.extend;
     data.customer_id = this.state.customer_id;
     data.id = this.state.id;
+    // data.t=123;
     const res = await webapi.request.post(url, {
       data
     });
@@ -538,7 +539,7 @@ class Applications extends Basic_Customer {
               <Form.Item name="name" label="名称">
                 <Input />
               </Form.Item>
-              {state.method == 'edit' ? ( 
+              {state.method == 'edit' ? (
                 <Form.Item name="secret" label="密钥">
                   <Input disabled bordered={false} />
                 </Form.Item>
@@ -591,23 +592,25 @@ class Applications extends Basic_Customer {
           </Tabs>
 
           <Form.Item {...this.__tail_layout()}>
-            <Button
-              type="primary"
-              htmlType="submit"
-              style={{ marginRight: "8px" }}
-              loading={this.props.server.loading}
-            >
-              {this.props.server.loading ? "正在提交" : "立即提交"}
-            </Button>
-            <Link
-              className="button"
-              to={
-                "/customer/applications?customer_id=" +
-                this.state.customer_id
-              }
-            >
-              返回
-            </Link>
+            <Space>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={this.props.server.loading}
+                shape="round"
+              >
+                {this.props.server.loading ? "正在提交" : "立即提交"}
+              </Button>
+              <Link
+                className="button"
+                to={
+                  "/customer/applications?customer_id=" +
+                  this.state.customer_id
+                }
+              >
+                返回
+              </Link>
+            </Space>
           </Form.Item>
         </Form>
       </>

@@ -126,7 +126,7 @@ export default class Basic_Books extends Basic {
         data.append("intro", values.intro || "");
         data.append("author_id", values.author_id || "");
         data.append("tags", values.tag || "");
-        data.append("t", "123");
+        // data.append("t", "123");
         state.data.file && data.append("image", state.data.file);
         const res = await webapi.request.post(this.handle_submit_build_url(`${this.base_url}home/dopost`), { data: this.handle_submit_build_data(data, values), file: true });;
         if (res.code === 10000) {
@@ -148,7 +148,7 @@ export default class Basic_Books extends Basic {
     }
     // Modal 添加-作品-开关
     handle_add_edit_modal_visible = (v) => {
-        this.setState({ add_edit_modal_visible: v })
+        this.setState({ add_edit_modal_visible: v, data: {} })
     }
     //生成封面图片
     __handleGenerateCoverImage = async (id) => {
@@ -863,6 +863,15 @@ export default class Basic_Books extends Basic {
                 ,
             },
             {
+                key: '4-1',
+                label:
+                    <Button type="primary" shape="round" icon={<ReadOutlined />} size={'default'}
+                        onClick={() => { this.__handle_book_read({ book_id: item.id }) }}>
+                        阅读模式
+                    </Button>
+                ,
+            },
+            {
                 key: '5',
                 label:
                     <Button type="primary" shape="round" icon={<GroupOutlined />} size={'default'}
@@ -1000,7 +1009,7 @@ export default class Basic_Books extends Basic {
         const applications = server.applications || {};
         // console.log(server);
         return <>
-
+            {this.__render_book_read_drawer()}
             <ProList<any>
                 // manualRequest={true}
                 params={{ ...state.params, q: state.q }}

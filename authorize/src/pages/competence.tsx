@@ -325,11 +325,11 @@ class Competence extends Basic_Authorize<{}, State> {
    * 提交
    **/
   handle_submit = async (data: Server.Competence) => {
-    const state = this.state.data as Server.Competence;
+    const d = this.state.data as Server.Competence;
     data.id = this.state.id;
-    data.menus = state.menus;
-    data.columns = state.columns;
-    data.permission = state.permission;
+    data.menus = d.menus;
+    data.columns = d.columns;
+    data.permission = d.permission;
     // data.browser_test_no_encrypt = 'qw12@!';
     let res = await webapi.request.post("competence/dopost", {
       data,
@@ -660,7 +660,7 @@ class Competence extends Basic_Authorize<{}, State> {
   __render_add_edit(u_action: string) {
     const state = this.state as unknown as State;
     const data = state.data as Server.Competence;
-    console.log("data=>", state);
+    // console.log("data=>", state);
     return (
       <Form ref={this.formRef} onFinish={this.handle_submit}>
         <Form.Item name="name" label="名称">

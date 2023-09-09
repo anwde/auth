@@ -1,4 +1,5 @@
 // @ts-nocheck
+import VirtualList from 'rc-virtual-list';
 import Basic_Component from "../../../components/base/component";
 import webapi from "../../../utils/webapi";
 import {
@@ -15,7 +16,9 @@ import {
     DatePicker,
     Select,
     Divider,
-    Radio
+    Radio,
+    List,
+    Skeleton
 } from "antd";
 import { PlusOutlined, DeleteOutlined, EditOutlined, SettingFilled, ArrowRightOutlined, ArrowLeftOutlined, UnorderedListOutlined } from "@ant-design/icons";
 
@@ -156,6 +159,10 @@ export default class Basic_Books extends Basic_Component {
         this.authors[user_id] = author;
         return this.authors[user_id];
     }
+    __get_chapter_content = async (data = {}) => {
+        return await webapi.request.get(`${this.base_url}chapters/content`, { data });
+
+    };
     /*----------------------1 other end----------------------*/
 
     /*----------------------2 init start  ----------------------*/
@@ -218,9 +225,10 @@ export default class Basic_Books extends Basic_Component {
     __handle_init_index = () => {
         this.setState({ pagination: this.__init_page_data() }, () => { this.__init_index() });
     }
+
     //显示内容
     __handle_chapter_content = async (data = {}) => {
-        const res = await webapi.request.get(`${this.base_url}chapters/content`, { data });
+        const res = await this.__get_chapter_content(data);
         if (res.code === 10000) {
             this.setState({ data: res.data, chapter_content_modal_visible: true });
         } else {
@@ -360,7 +368,38 @@ export default class Basic_Books extends Basic_Component {
             }
         );
     };
+    __handle_book_read = (params) => {
+        this.setState({ chapters_lists: [] }, () => {
+            this.__handle_book_read_chapter_content(params);
+            this.__handle_book_read_drawer_open();
+        });
 
+    }
+    //显示内容
+    __handle_book_read_chapter_content = async (params = {}) => {
+        const res = await this.__get_chapter_content(params);
+        if (res.code === 10000) {
+            this.setState({ chapter: res.data, chapters_lists: [...this.state.chapters_lists, res.data] });
+        } else {
+            webapi.message.error(res.message);
+        }
+    };
+    __handle_book_read_drawer_close = () => {
+        this.setState({ book_read_drawer_visible: false });
+    }
+    __handle_book_read_drawer_open = () => {
+        this.setState({ book_read_drawer_visible: true });
+    }
+    loadMoreData = () => {
+        const state = this.state;
+        const chapter = state.chapter || {};
+        console.log(chapter);
+        if (chapter.next_id > 0) {
+            this.__handle_book_read_chapter_content({ book_id: this.state.chapter.book_id, chapter_id: chapter.next_id });
+        }
+
+
+    }
     /*----------------------3 handle end  ----------------------*/
 
     /*----------------------4 render start  ----------------------*/
@@ -369,8 +408,8 @@ export default class Basic_Books extends Basic_Component {
         const state = this.state;
         const data = state.data;
         const item = state.item || {};
-        const content_arr = data.content_arr || [];
-        const content = (
+        const content = data.content || [];
+        const popover_content = (
             <div>
                 <Space>
                     <Button
@@ -622,7 +661,7 @@ export default class Basic_Books extends Basic_Component {
                             <Popover
                                 placement="bottomRight"
                                 title={<span>将内容设置为</span>}
-                                content={content}
+                                content={popover_content}
                                 trigger="click"
                                 open={this.state.popover_visible}
                                 onOpenChange={this.handle_popover_change_visible}
@@ -668,17 +707,22 @@ export default class Basic_Books extends Basic_Component {
                                 }
                             }}
                         >
-                            <div>
-                                {content_arr.map((k, v) => {
-                                    return <p key={v} style={{
+                            <List
+                                dataSource={content}
+                                renderItem={(k, v) => (
+
+                                    <p key={v} style={{
                                         textIndent: '2em',
                                         fontSize: '18px',
                                         lineHeight: 1.7,
                                         fontFamily: "宋体",
                                         margin: '20px 0px'
                                     }}>{k}</p>
-                                })}
-                            </div>
+
+                                )}
+                            />
+
+
                         </Dropdown>
                     </div>
                 </Modal>
@@ -785,6 +829,65 @@ export default class Basic_Books extends Basic_Component {
         }
         return items;
     };
+    __render_book_read_drawer() {
+        const state = this.state;
+        const book = state.book || {};
+        const data = state.data;
+        const item = state.item || {};
+        const chapter = state.chapter || {};
+        const chapters_lists = state.chapters_lists || [];
+        const loadMore = chapter.next_id > 0 ?
+            <div
+                style={{
+                    textAlign: 'center',
+                    marginTop: 12,
+                    height: 32,
+                    lineHeight: '32px',
+                }}
+            >
+                <Button onClick={this.loadMoreData}>loading more</Button>
+            </div> : '';
+
+        return <Drawer
+            title={book.name}
+            width={"61.8%"}
+            forceRender={true}
+            onClose={this.__handle_book_read_drawer_close}
+            open={state.book_read_drawer_visible}
+        >
+            <List
+                className="demo-loadmore-list"
+                itemLayout="horizontal"
+                loadMore={loadMore}
+                dataSource={chapters_lists}
+                renderItem={(v, k) => (
+
+                    <div key={k}  >
+                        <h3>{v.name}</h3>
+                        <Divider />
+
+                        {v.content.map((t, i) => {
+                            return <p key={i} style={{
+                                textIndent: '2em',
+                                fontSize: '18px',
+                                lineHeight: 1.7,
+                                fontFamily: "宋体",
+                                margin: '20px 0px'
+                            }}>{t}
+                            </p>
+                        })}
+                    </div>
+
+
+
+
+                )}
+            />
+
+
+
+        </Drawer>;
+    }
 
     /*----------------------4 render end  ----------------------*/
 }

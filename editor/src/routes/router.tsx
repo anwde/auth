@@ -53,6 +53,9 @@ const Books_Tags = lazy(
 const Books_Authors = lazy(
   () => import("../pages/books/authors")
 );
+const Project_Home = lazy(
+  () => import("../pages/project/home")
+);
 let routes: Server.Routes[] = [
   {
     path: "/books",
@@ -139,8 +142,12 @@ let routes: Server.Routes[] = [
 
 
 
-    ],
+    ]
   },
+  {
+    path: "/project/home/:method?/:id?",
+    component: Project_Home,
+  }
 ];
 
 export default routes;

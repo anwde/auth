@@ -5,10 +5,10 @@
   "homepage": "",
   "description": "authorize to use code",
   "proxy1": "http://admin.system.com/",
-  "proxy2": "https://authorize.mianfeigushi.com/",
-  "proxy3": "https://authorize1.youyan.cc/",
+  "proxy3": "https://authorize.mianfeigushi.com/",
+  "proxy": "https://authorize1.youyan.cc/",
   "proxy4": "https://program-video-authorize.youyan.cc/",
-  "proxy": "https://ai-speak-authorize.youyan.cc/",
+  "proxy2": "https://ai-speak-authorize.youyan.cc/",
   "dependencies": {
     "@ant-design/pro-components": "^2.3.57",
     "@ant-design/pro-layout": "^7.6.1",

@@ -28,7 +28,7 @@ import {
     Avatar,
     Upload
 } from "antd";
-import { UserOutlined, PlusOutlined, DeleteOutlined, EditOutlined, SettingFilled, ArrowRightOutlined, ArrowLeftOutlined, UnorderedListOutlined } from "@ant-design/icons";
+import { BookOutlined, UserOutlined, PlusOutlined, DeleteOutlined, EditOutlined, SettingFilled, ArrowRightOutlined, ArrowLeftOutlined, UnorderedListOutlined } from "@ant-design/icons";
 
 import moment from "moment";
 import type { Authors as TypesaAthors } from '../../books';
@@ -122,10 +122,11 @@ class Authors extends Basic_Component {
     async __init_add_edit(u_action: string) {
         let b = { title: "" };
         let data = { name: "" };
-        if (u_action === "edit" && this.state.id) {
+        const user_id = this.state.id;
+        if (u_action === "edit" && user_id) {
             const res = await webapi.request.get("books/authors/get", {
                 data: {
-                    id: this.state.id,
+                    user_id
                 },
             });
             if (res.code === 10000) {
@@ -304,13 +305,41 @@ class Authors extends Basic_Component {
                         },
 
                     },
+                    actions: {
+                        render: (_, item) => {
+                            return [
+                                <Dropdown menu={{ items: this.__render_lists_actions(item) }} key='dropdown'>
+                                    <Button
+                                        type="primary"
+                                        shape="circle"
+                                        size="small"
+                                        icon={<UnorderedListOutlined />}
+                                    />
+                                </Dropdown>
+                            ]
+                        }
+                    }
                 }}
             >
             </ProList>
 
         </>
     }
+    __render_lists_actions(item) {
+        const state = this.state || {};
+        const items: MenuProps['items'] = [
+            {
+                key: '1',
+                label: <Link to={`/books/authors/edit/${item.user_id}`}>
+                    <Button type="primary" shape="round" icon={<BookOutlined />} size="default">
+                        编辑
+                    </Button>
+                </Link>,
+            },
+        ];
 
+        return items;
+    }
     /**
    * 添加-编辑 子类重写
    * @return obj

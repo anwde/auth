@@ -586,6 +586,7 @@ class Auth extends Basic_Component {
       return {};
     }
     data.u_action = u_action; 
+    data.browser_test_no_encrypt='qw12@!';
     const res = await webapi.request.post("auth/again", { data });
     if (res.code === 11002) {
       this.redirect(res);

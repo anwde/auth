@@ -99,7 +99,8 @@ class Chapters extends Base_Chapters {
   /*----------------------3 handle start----------------------*/
   //显示内容
   handle_content = (id) => {
-    this.__handle_content(id, 'books')
+    this.__handle_chapter_content({ book_id: this.state.book_id, chapter_id: id });
+    // this.__handle_content(id, 'books')
   }
 
   //批量操作 rowSelection

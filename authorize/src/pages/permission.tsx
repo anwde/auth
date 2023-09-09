@@ -362,6 +362,7 @@ class Permission extends Basic_Authorize<{}, State> {
     // data.id = this.state.permission_id;
     // data.parent_id = this.state.parent_id || 0;
     // data.group_id = this.state.group_id || 0;
+    // data.browser_test_no_encrypt = 'qw12@!';
     const res = await webapi.request.post("permission/dopost", {
       data,
     });
